@@ -1,5 +1,3 @@
-'use client';
-
 import * as z from 'zod';
 
 export const SignUpFormSchema = z.object({
@@ -34,14 +32,3 @@ export const ResetPasswordFormSchema = z.object({
     message: 'O email é obrigatório',
   }),
 });
-
-export const UpdatePasswordFormSchema = z
-  .object({
-    currentPassword: z.string().min(8).max(100),
-    newPassword: z.string().min(8).max(100),
-    confirmPassword: z.string().min(8).max(100),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'As senhas não coincidem',
-    path: ['confirmPassword'],
-  });

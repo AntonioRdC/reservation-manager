@@ -1,12 +1,10 @@
 'use server';
 
 import { signOut } from '@/lib/auth/auth';
-import { AuthError } from 'next-auth';
-import { compare, hash } from 'bcryptjs';
+import { hash, compare } from 'bcryptjs';
 import * as z from 'zod';
 
 import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/mail';
-import { DEFAULT_LOGIN_REDIRECT } from '@/lib/auth/routes';
 import {
   deletePasswordResetToken,
   getPasswordResetTokenByToken,
@@ -19,61 +17,43 @@ import {
   generatePasswordResetToken,
   generateVerificationToken,
 } from '@/lib/tokens';
-import { signIn } from '@/lib/auth/auth';
 import {
   createUser,
-  getUserByEmail,
   updateEmailVerifiedUser,
   updatePasswordUser,
+  getUserByEmail,
 } from '@/lib/db/queries/users';
 import {
   NewPasswordFormSchema,
   ResetPasswordFormSchema,
-  SignInFormSchema,
   SignUpFormSchema,
-  UpdatePasswordFormSchema,
-} from '@/app/(login)/schema';
-import { ActivityType, NewActivityLog } from '@/lib/db/schema';
-import { createActivityLog } from '@/lib/db/queries/activity-logs';
-
-async function logActivity(
-  userId: string,
-  type: ActivityType,
-  ipAddress?: string,
-) {
-  const newActivity: NewActivityLog = {
-    userId,
-    action: type,
-    ipAddress: ipAddress || '',
-  };
-
-  await createActivityLog(newActivity);
-}
+  SignInFormSchema,
+} from '@/app/(auth)/schema';
 
 export const signUpAction = async (
   values: z.infer<typeof SignUpFormSchema>,
 ) => {
   const validatedFields = SignUpFormSchema.safeParse(values);
-
   if (!validatedFields.success) {
     return { error: 'Email ou senha inválidos' };
   }
 
   const { email, password, name } = validatedFields.data;
-  const hashedPassword = await hash(password, 10);
 
   const existingUser = await getUserByEmail(email);
-
   if (existingUser) {
-    return { error: 'Email inválido' };
+    return { error: 'Email já cadastrado' };
   }
+
+  const hashedPassword = await hash(password, 10);
 
   await createUser(name, email, hashedPassword);
 
   const verificationToken = await generateVerificationToken(email);
-
   if (!verificationToken) {
-    return { error: 'Ocorreu um erro no servidor' };
+    return {
+      error: 'Ocorreu um erro no servidor, por favor, tente mais tarde',
+    };
   }
 
   await sendVerificationEmail(
@@ -86,67 +66,37 @@ export const signUpAction = async (
 
 export const signInAction = async (
   values: z.infer<typeof SignInFormSchema>,
-  callbackUrl?: string | null,
 ) => {
   const validatedFields = SignInFormSchema.safeParse(values);
-
   if (!validatedFields.success) {
     return { error: 'Email ou senha inválidos' };
   }
 
   const { email, password } = validatedFields.data;
 
-  const existingUser = await getUserByEmail(email);
-
-  if (!existingUser || !existingUser.email || !existingUser.password) {
+  const user = await getUserByEmail(email);
+  if (!user || !user.email || !user.password)
     return { error: 'Email ou senha inválidos' };
-  }
 
-  if (!existingUser.emailVerified) {
-    const verificationToken = await generateVerificationToken(
-      existingUser.email,
-    );
-
-    if (!verificationToken) {
-      return { error: 'Ocorreu um erro no servidor' };
-    }
+  if (!user.emailVerified) {
+    const verificationToken = await generateVerificationToken(user.email);
 
     await sendVerificationEmail(
       verificationToken.identifier,
       verificationToken.token,
     );
 
-    return { success: 'Email de confirmação enviado' };
+    return { success: 'Email de confirmação enviado!' };
   }
 
-  try {
-    await signIn('credentials', {
-      email,
-      password,
-      redirectTo: callbackUrl || DEFAULT_LOGIN_REDIRECT,
-    });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case 'CredentialsSignin':
-          return { error: 'Email ou senha inválidos' };
-        default:
-          return { error: 'Algo deu errado' };
-      }
-    }
+  const passwordsMatch = await compare(password, user?.password!);
+  if (!passwordsMatch) return { error: 'Email ou senha inválidos' };
 
-    throw error;
-  }
-};
-
-export const signInGoogleAction = async (provider: string) => {
-  await signIn(provider, {
-    callbackUrl: DEFAULT_LOGIN_REDIRECT,
-  });
+  return { email, password };
 };
 
 export const signOutAction = async () => {
-  await signOut();
+  await signOut({ redirectTo: '/' });
 };
 
 export const newVerificationAction = async (token: string) => {
@@ -245,44 +195,4 @@ export const resetPasswordAction = async (
     success:
       'Email de redefinição enviado, por favor, verifique sua caixa de mensagem',
   };
-};
-
-export const updatePasswordAction = async (
-  values: z.infer<typeof UpdatePasswordFormSchema>,
-  email: string,
-) => {
-  const validatedFields = UpdatePasswordFormSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: 'Senha inválida' };
-  }
-
-  const user = await getUserByEmail(email);
-
-  if (!user) {
-    return { error: 'Algo deu errado' };
-  }
-
-  const { currentPassword, newPassword } = validatedFields.data;
-
-  const isPasswordValid = compare(currentPassword, user.password!);
-
-  if (!isPasswordValid) {
-    return { error: 'Senha atual incorreta.' };
-  }
-
-  if (currentPassword === newPassword) {
-    return {
-      error: 'A nova senha deve ser diferente da senha atual.',
-    };
-  }
-
-  const newPasswordHash = await hash(newPassword, 10);
-
-  await Promise.all([
-    updatePasswordUser(user.id, newPasswordHash),
-    logActivity(user.id, ActivityType.UPDATE_PASSWORD),
-  ]);
-
-  return { success: 'Senha atualizada com sucesso.' };
 };

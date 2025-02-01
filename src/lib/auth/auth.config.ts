@@ -1,9 +1,9 @@
+import { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import type { NextAuthConfig } from 'next-auth';
 import Google from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 
-import { SignInFormSchema } from '@/app/(login)/schema';
+import { SignInFormSchema } from '@/app/(auth)/schema';
 import { getUserByEmail } from '@/lib/db/queries/users';
 
 export default {

@@ -1,13 +1,13 @@
-import NextAuth from "next-auth";
+import NextAuth from 'next-auth';
 
-import authConfig from "@/lib/auth/auth.config";
+import authConfig from '@/lib/auth/auth.config';
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
   adminRoutes,
-} from "@/lib/auth/routes";
+} from '@/lib/auth/routes';
 
 const { auth } = NextAuth(authConfig);
 
@@ -30,17 +30,17 @@ export default auth(async (req): Promise<any> => {
     return null;
   }
 
-  if (isAdminRoute && (!isLoggedIn || userRole !== "ADMIN")) {
-    return Response.redirect(new URL("/auth/login", nextUrl));
+  if (isAdminRoute && (!isLoggedIn || userRole !== 'ADMIN')) {
+    return Response.redirect(new URL('/sign-in', nextUrl));
   }
 
   if (!isPublicRoute && !isLoggedIn) {
-    return Response.redirect(new URL("/auth/login", nextUrl));
+    return Response.redirect(new URL('/sign-in', nextUrl));
   }
 
   return null;
 });
 
 export const config = {
-  matcher: ["/admin", "/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ['/admin', '/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };

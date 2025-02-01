@@ -7,8 +7,6 @@ import {
   UserCog,
   AlertCircle,
   UserMinus,
-  Mail,
-  CheckCircle,
   type LucideIcon,
 } from 'lucide-react';
 import { ActivityType } from '@/lib/db/schema';
@@ -62,11 +60,11 @@ export default async function ActivityPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
-        Activity Log
+        Registro de Atividades
       </h1>
       <Card>
         <CardHeader>
-          <CardTitle>Recent Activity</CardTitle>
+          <CardTitle>Atividades Recentes</CardTitle>
         </CardHeader>
         <CardContent>
           {logs.length > 0 ? (
@@ -85,7 +83,7 @@ export default async function ActivityPage() {
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
                         {formattedAction}
-                        {log.ipAddress && ` from IP ${log.ipAddress}`}
+                        {log.ipAddress && ` do IP ${log.ipAddress}`}
                       </p>
                       <p className="text-xs text-gray-500">
                         {getRelativeTime(new Date(log.timestamp))}
@@ -99,11 +97,11 @@ export default async function ActivityPage() {
             <div className="flex flex-col items-center justify-center text-center py-12">
               <AlertCircle className="h-12 w-12 text-orange-500 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No activity yet
+                Nenhuma atividade registrada
               </h3>
               <p className="text-sm text-gray-500 max-w-sm">
-                When you perform actions like signing in or updating your
-                account, they'll appear here.
+                Quando você realizar ações como fazer login ou atualizar sua
+                conta, elas aparecerão aqui.
               </p>
             </div>
           )}

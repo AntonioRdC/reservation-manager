@@ -67,3 +67,21 @@ export const updatePasswordUser = async (id: string, password: string) => {
     return null;
   }
 };
+
+export const updateNameAndEmailUser = async (
+  id: string,
+  name: string,
+  email: string,
+) => {
+  try {
+    const [updatedUser] = await db
+      .update(users)
+      .set({ name, email })
+      .where(eq(users.id, id))
+      .returning();
+
+    return updatedUser;
+  } catch {
+    return null;
+  }
+};

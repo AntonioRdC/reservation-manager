@@ -1,9 +1,27 @@
+import { ArrowRight, CreditCard, Database, Layers3Icon } from 'lucide-react';
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database } from 'lucide-react';
 
 export default function HomePage() {
   return (
     <main>
+      <header className="border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+          <Link href="/" className="flex items-center">
+            <Layers3Icon className="h-6 w-6" />
+            <span className="ml-2 text-xl font-semibold text-gray-900">
+              Reserva de espaços
+            </span>
+          </Link>
+          <div className="flex items-center space-x-4">
+            <Button>
+              <Link href="/sign-in">Fazer login</Link>
+            </Button>
+          </div>
+        </div>
+      </header>
+
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
