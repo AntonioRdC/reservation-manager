@@ -9,9 +9,9 @@ import {
   Shield,
   Activity,
   Menu,
-  Home,
   LogOut,
   Layers3Icon,
+  AlbumIcon,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -38,14 +38,25 @@ export function UserPage({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
-    { href: '/dashboard', icon: Users, label: 'Team' },
-    { href: '/dashboard/general', icon: Settings, label: 'General' },
-    { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
-    { href: '/dashboard/security', icon: Shield, label: 'Security' },
+    {
+      group: 'Reservas',
+      links: [
+        { href: '/dashboard', icon: Users, label: 'Minhas Reservas' },
+        { href: '/reservation', icon: AlbumIcon, label: 'Fazer Reserva' },
+      ],
+    },
+    {
+      group: 'Minha Conta',
+      links: [
+        { href: '/account', icon: Settings, label: 'Perfil' },
+        { href: '/account/activity', icon: Activity, label: 'Atividade' },
+        { href: '/account/security', icon: Shield, label: 'Segurança' },
+      ],
+    },
   ];
 
   const handleSignOut = () => {
-    signOutAction();
+    signOutAction(user);
   };
 
   return (
@@ -53,12 +64,19 @@ export function UserPage({
       <header className="border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Layers3Icon className="h-6 w-6" />
+            <Layers3Icon className="h-6 w-6 text-rose-400" />
             <span className="ml-2 text-xl font-semibold text-gray-900">
               Reserva de espaços
             </span>
           </div>
           <div className="flex items-center space-x-4">
+            <Button
+              className="lg:hidden p-0"
+              variant="ghost"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" className="rounded-full">
@@ -83,12 +101,6 @@ export function UserPage({
                   </p>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link href="/dashboard" className="flex w-full items-center">
-                    <Home className="mr-2 h-4 w-4" />
-                    <span>Seu perfil</span>
-                  </Link>
-                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Sair</span>
@@ -99,21 +111,6 @@ export function UserPage({
         </div>
       </header>
       <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
-        {/* Mobile header */}
-        <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
-          <div className="flex items-center">
-            <span className="font-medium">Settings</span>
-          </div>
-          <Button
-            className="-mr-3"
-            variant="ghost"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle sidebar</span>
-          </Button>
-        </div>
-
         <div className="flex flex-1 overflow-hidden h-full">
           {/* Sidebar */}
           <aside
@@ -124,19 +121,28 @@ export function UserPage({
             }`}
           >
             <nav className="h-full overflow-y-auto p-4">
-              {navItems.map((item) => (
-                <Link key={item.href} href={item.href} passHref>
-                  <Button
-                    variant={pathname === item.href ? 'secondary' : 'ghost'}
-                    className={`shadow-none my-1 w-full justify-start ${
-                      pathname === item.href ? 'bg-gray-100' : ''
-                    }`}
-                    onClick={() => setIsSidebarOpen(false)}
-                  >
-                    <item.icon className="mr-2 h-4 w-4" />
-                    {item.label}
-                  </Button>
-                </Link>
+              {navItems.map((group) => (
+                <div key={group.group}>
+                  <h3 className="text-sm font-medium text-gray-500 px-2 py-1">
+                    {group.group}
+                  </h3>
+                  {group.links.map((item) => (
+                    <Link key={item.href} href={item.href} passHref>
+                      <Button
+                        variant={pathname === item.href ? 'secondary' : 'ghost'}
+                        className={`shadow-none my-1 w-full justify-start ${
+                          pathname === item.href
+                            ? 'bg-gray-100 text-rose-400'
+                            : ''
+                        }`}
+                        onClick={() => setIsSidebarOpen(false)}
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        {item.label}
+                      </Button>
+                    </Link>
+                  ))}
+                </div>
               ))}
             </nav>
           </aside>

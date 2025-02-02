@@ -2,12 +2,19 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { eq } from 'drizzle-orm';
 import NextAuth from 'next-auth';
 
-import { users, accounts, sessions, verificationTokens } from '@/lib/db/schema';
+import {
+  users,
+  accounts,
+  sessions,
+  verificationTokens,
+  ActivityType,
+} from '@/lib/db/schema';
 import { getAccountByUserId } from '@/lib/db/queries/accounts';
 import { getUserById } from '@/lib/db/queries/users';
 import authConfig from '@/lib/auth/auth.config';
 import { UserRole } from '@/lib/auth/next-auth';
 import { db } from '@/lib/db/drizzle';
+import { logActivity } from '@/app/actions';
 
 export const {
   handlers: { GET, POST },
@@ -32,6 +39,8 @@ export const {
   },
   callbacks: {
     async signIn({ user, account }) {
+      await logActivity(user.id!, ActivityType.SIGN_IN);
+
       if (account?.provider !== 'credentials') return true;
 
       const existingUser = await getUserById(user.id as string);

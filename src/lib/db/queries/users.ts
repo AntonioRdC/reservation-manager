@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { users } from '@/lib/db/schema';
 import { db } from '@/lib/db/drizzle';
@@ -44,7 +44,7 @@ export const updateEmailVerifiedUser = async (id: string, email: string) => {
   try {
     const [updatedUser] = await db
       .update(users)
-      .set({ emailVerified: new Date(), email })
+      .set({ emailVerified: new Date(), email, updatedAt: new Date() })
       .where(eq(users.id, id))
       .returning();
 
@@ -58,7 +58,7 @@ export const updatePasswordUser = async (id: string, password: string) => {
   try {
     const [updatedUser] = await db
       .update(users)
-      .set({ password })
+      .set({ password, updatedAt: new Date() })
       .where(eq(users.id, id))
       .returning();
 
@@ -68,19 +68,37 @@ export const updatePasswordUser = async (id: string, password: string) => {
   }
 };
 
-export const updateNameAndEmailUser = async (
+export const updateAccountUser = async (
   id: string,
   name: string,
-  email: string,
+  email: string | undefined,
+  emailVerified: null | undefined,
 ) => {
   try {
     const [updatedUser] = await db
       .update(users)
-      .set({ name, email })
+      .set({ name, email, emailVerified, updatedAt: new Date() })
       .where(eq(users.id, id))
       .returning();
 
     return updatedUser;
+  } catch {
+    return null;
+  }
+};
+
+export const deleteUserById = async (id: string) => {
+  try {
+    const [deletedUser] = await db
+      .update(users)
+      .set({
+        deletedAt: new Date(),
+        email: sql`CONCAT(email, '-', id, '-deleted')`,
+      })
+      .where(eq(users.id, id))
+      .returning();
+
+    return deletedUser;
   } catch {
     return null;
   }

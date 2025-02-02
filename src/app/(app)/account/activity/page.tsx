@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getActivityLogs } from '@/lib/db/queries/activity-logs';
 import {
   Settings,
   LogOut,
@@ -10,7 +11,6 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { ActivityType } from '@/lib/db/schema';
-import { getActivityLogs } from '@/lib/db/queries/activity-logs';
 
 const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.SIGN_UP]: UserPlus,
@@ -25,13 +25,13 @@ function getRelativeTime(date: Date) {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return 'just now';
+  if (diffInSeconds < 60) return 'agora';
   if (diffInSeconds < 3600)
-    return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    return `${Math.floor(diffInSeconds / 60)} minutos atrás`;
   if (diffInSeconds < 86400)
-    return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    return `${Math.floor(diffInSeconds / 3600)} horas atrás`;
   if (diffInSeconds < 604800)
-    return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return `${Math.floor(diffInSeconds / 86400)} dias atrás`;
   return date.toLocaleDateString();
 }
 
@@ -77,8 +77,8 @@ export default async function ActivityPage() {
 
                 return (
                   <li key={log.id} className="flex items-center space-x-4">
-                    <div className="bg-orange-100 rounded-full p-2">
-                      <Icon className="w-5 h-5 text-orange-600" />
+                    <div className="bg-rose-100 rounded-full p-2">
+                      <Icon className="w-5 h-5 text-rose-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">
@@ -95,7 +95,7 @@ export default async function ActivityPage() {
             </ul>
           ) : (
             <div className="flex flex-col items-center justify-center text-center py-12">
-              <AlertCircle className="h-12 w-12 text-orange-500 mb-4" />
+              <AlertCircle className="h-12 w-12 text-rose-500 mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Nenhuma atividade registrada
               </h3>

@@ -29,6 +29,9 @@ import {
   SignUpFormSchema,
   SignInFormSchema,
 } from '@/app/(auth)/schema';
+import { ActivityType } from '@/lib/db/schema';
+import { logActivity } from '../actions';
+import { ExtendedUser } from '@/lib/auth/next-auth';
 
 export const signUpAction = async (
   values: z.infer<typeof SignUpFormSchema>,
@@ -47,7 +50,8 @@ export const signUpAction = async (
 
   const hashedPassword = await hash(password, 10);
 
-  await createUser(name, email, hashedPassword);
+  const user = await createUser(name, email, hashedPassword);
+  await logActivity(user?.id!, ActivityType.SIGN_OUT);
 
   const verificationToken = await generateVerificationToken(email);
   if (!verificationToken) {
@@ -95,8 +99,11 @@ export const signInAction = async (
   return { email, password };
 };
 
-export const signOutAction = async () => {
-  await signOut({ redirectTo: '/' });
+export const signOutAction = async (user: ExtendedUser) => {
+  await Promise.all([
+    logActivity(user.id!, ActivityType.SIGN_OUT),
+    signOut({ redirectTo: '/' }),
+  ]);
 };
 
 export const newVerificationAction = async (token: string) => {
@@ -161,9 +168,11 @@ export const newPasswordAction = async (
 
   const hashedPassword = await hash(password, 10);
 
-  await updatePasswordUser(existingUser.id, hashedPassword);
-
-  await deletePasswordResetToken(existingToken.id);
+  await Promise.all([
+    logActivity(existingUser.id, ActivityType.UPDATE_PASSWORD),
+    updatePasswordUser(existingUser.id, hashedPassword),
+    deletePasswordResetToken(existingToken.id),
+  ]);
 
   return { success: 'Senha atualizada!' };
 };

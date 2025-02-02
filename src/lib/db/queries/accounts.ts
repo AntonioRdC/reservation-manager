@@ -15,3 +15,16 @@ export const getAccountByUserId = async (id: string) => {
     return null;
   }
 };
+
+export const deleteAccountByUserId = async (id: string) => {
+  try {
+    const deletedAccount = await db
+      .delete(accounts)
+      .where(eq(accounts.userId, id))
+      .returning();
+
+    return deletedAccount;
+  } catch {
+    return null;
+  }
+};

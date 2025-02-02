@@ -20,6 +20,7 @@ export const users = pgTable('user', {
   role: varchar('role', { length: 20 }).notNull().default('USER'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
+  deletedAt: timestamp('deleted_at').notNull().defaultNow(),
 });
 
 export const activityLogs = pgTable('activity_logs', {

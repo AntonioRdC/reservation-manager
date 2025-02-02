@@ -121,7 +121,7 @@ export default function RestPasswordPage() {
                     <Button
                       disabled={isPending}
                       type="submit"
-                      className="flex-1 w-full"
+                      className="flex-1 w-full bg-rose-500 hover:bg-rose-600"
                     >
                       Enviar E-mail
                     </Button>
