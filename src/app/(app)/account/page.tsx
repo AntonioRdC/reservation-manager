@@ -13,7 +13,7 @@ export default async function AccountPage() {
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+      <h1 className="text-lg lg:text-2xl font-medium text-rose-500 mb-6">
         Configuração da conta
       </h1>
 

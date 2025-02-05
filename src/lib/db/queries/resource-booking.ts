@@ -1,5 +1,6 @@
 import { NewResourceBooking, resourceBookings } from '@/lib/db/schema';
 import { db } from '@/lib/db/drizzle';
+import { eq } from 'drizzle-orm';
 
 export const createResourceBooking = async (payload: NewResourceBooking) => {
   try {
@@ -9,6 +10,19 @@ export const createResourceBooking = async (payload: NewResourceBooking) => {
       .returning();
 
     return resourceBooking;
+  } catch {
+    return null;
+  }
+};
+
+export const getResourceBookingByUserId = async (bookingId: string) => {
+  try {
+    const resourcesList = await db
+      .select()
+      .from(resourceBookings)
+      .where(eq(resourceBookings.bookingId, bookingId));
+
+    return resourcesList;
   } catch {
     return null;
   }

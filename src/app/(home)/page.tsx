@@ -77,7 +77,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center">
             <Layers3Icon className="h-6 w-6" />
-            <span className="ml-2 text-xl font-semibold text-gray-900">
+            <span className="ml-2 text-xl font-semibold text-rose-500">
               Reserva de espaços
             </span>
           </Link>

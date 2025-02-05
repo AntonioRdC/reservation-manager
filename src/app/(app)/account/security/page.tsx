@@ -14,7 +14,7 @@ export default async function SecurityPage() {
 
   return (
     <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium bold text-gray-900 mb-6">
+      <h1 className="text-lg lg:text-2xl font-medium bold text-rose-500 mb-6">
         Configurações de Segurança
       </h1>
       {!user.isOAuth && (

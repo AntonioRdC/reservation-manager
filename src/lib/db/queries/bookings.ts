@@ -1,13 +1,27 @@
 import { asc, eq } from 'drizzle-orm';
 
-import { bookings, NewBooking } from '@/lib/db/schema';
+import { Booking, bookings, NewBooking } from '@/lib/db/schema';
 import { db } from '@/lib/db/drizzle';
 
-export const getAllBooking = async () => {
+export const getAllBookings = async () => {
   try {
     const bookingsList = await db
       .select()
       .from(bookings)
+      .orderBy(asc(bookings.createdAt));
+
+    return bookingsList;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getBookingsById = async (userId: string): Promise<Booking[]> => {
+  try {
+    const bookingsList = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.userId, userId))
       .orderBy(asc(bookings.createdAt));
 
     return bookingsList;

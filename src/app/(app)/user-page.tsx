@@ -102,7 +102,7 @@ export function UserPage({
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
+                  <LogOut className="mr-2 h-4 w-4 text-rose-500" />
                   <span>Sair</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
