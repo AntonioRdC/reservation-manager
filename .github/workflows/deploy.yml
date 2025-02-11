@@ -20,22 +20,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Instalar dependências
-        run: npm install --production
-
-      - name: Exportar variáveis de ambiente para o banco de dados
-        run: |
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_USER=${{ secrets.DB_USER }}" >> $GITHUB_ENV
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> $GITHUB_ENV
-
-      - name: Rodar db:generate
-        run: npm run db:generate
-
-      - name: Rodar db:migrate
-        run: npm run db:migrate
-
       - name: Criar pacote ZIP para o Beanstalk
         run: zip -r app.zip * -x "node_modules/*" ".git/*" ".github/*"
 
