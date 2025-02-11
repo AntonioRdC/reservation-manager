@@ -16,7 +16,9 @@ export const getAllBookings = async () => {
   }
 };
 
-export const getBookingsById = async (userId: string): Promise<Booking[]> => {
+export const getBookingsById = async (
+  userId: string,
+): Promise<Booking[] | null> => {
   try {
     const bookingsList = await db
       .select()

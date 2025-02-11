@@ -1,0 +1,98 @@
+'use server';
+
+import * as z from 'zod';
+
+import { createResourceBooking } from '@/lib/db/queries/resource-booking';
+import { putS3generatePresignedUrl } from '@/lib/aws/aws';
+import { createBooking } from '@/lib/db/queries/bookings';
+import { currentUser } from '@/lib/auth/hooks/get-current-user';
+
+import { ReservationFormSchema } from '@/app/(app)/(booking)/reservation/schema';
+
+export const createBookingAction = async (
+  values: z.infer<typeof ReservationFormSchema>,
+) => {
+  const validatedFields = ReservationFormSchema.safeParse(values);
+  const user = await currentUser();
+
+  if (!validatedFields.success) {
+    return { error: 'Campos inválidos!' };
+  }
+
+  const { space, category, date, startTime, endTime, image, resources } =
+    validatedFields.data;
+
+  if (!user?.id) {
+    return { error: 'Usuário não autenticado!' };
+  }
+
+  const parsedStartTime = new Date(date);
+  const parsedEndTime = new Date(date);
+
+  const [startHour, startMinutes, startPeriod] = startTime
+    .replace(/:/g, ' ')
+    .split(' ');
+  const [endHour, endMinutes, endPeriod] = endTime
+    .replace(/:/g, ' ')
+    .split(' ');
+
+  parsedStartTime.setHours(
+    startPeriod === 'PM' ? parseInt(startHour) + 12 : parseInt(startHour),
+    parseInt(startMinutes),
+  );
+  parsedEndTime.setHours(
+    endPeriod === 'PM' ? parseInt(endHour) + 12 : parseInt(endHour),
+    parseInt(endMinutes),
+  );
+
+  if (!category) {
+    return { error: 'A categoria é obrigatório.' };
+  }
+
+  const bookingData = {
+    spaceId: space,
+    userId: user.id,
+    startTime: parsedStartTime,
+    endTime: parsedEndTime,
+    image: null,
+    category,
+  };
+
+  const reservation = await createBooking(bookingData);
+
+  if (reservation) {
+    for (const i in resources) {
+      const resource = await createResourceBooking({
+        bookingId: reservation?.id,
+        resourceId: resources[i].id,
+        quantity: resources[i].quantity,
+      });
+
+      if (!resource) {
+        return { error: 'Ocorreu um erro, por favor tente mais tarde' };
+      }
+    }
+
+    if (image instanceof File) {
+      const presignedUrl = await putS3generatePresignedUrl(
+        image.name,
+        image.type,
+      );
+
+      if (presignedUrl === null) {
+        return { error: 'Ocorreu um erro, por favor tente mais tarde' };
+      }
+
+      await fetch(presignedUrl, {
+        method: 'PUT',
+        body: image,
+        headers: {
+          'Content-Type': image.type,
+        },
+      });
+    }
+
+    return { success: true };
+  }
+  return { error: 'Ocorreu um erro, por favor tente mais tarde' };
+};

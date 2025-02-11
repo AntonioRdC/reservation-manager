@@ -12,6 +12,7 @@ import {
   LogOut,
   Layers3Icon,
   AlbumIcon,
+  UserCog,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -53,6 +54,20 @@ export function UserPage({
         { href: '/account/security', icon: Shield, label: 'Segurança' },
       ],
     },
+    ...(user.role === 'ADMIN'
+      ? [
+          {
+            group: 'Admin',
+            links: [
+              {
+                href: '/admin/manager',
+                icon: UserCog,
+                label: 'Gerenciar Reservas',
+              },
+            ],
+          },
+        ]
+      : []),
   ];
 
   const handleSignOut = () => {
