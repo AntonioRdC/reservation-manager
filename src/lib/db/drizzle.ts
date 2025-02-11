@@ -2,9 +2,14 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
 
-if (!process.env.POSTGRES_URL) {
-  throw new Error('POSTGRES_URL environment variable is not set');
+const { DB_HOSTNAME, DB_PORT, DB_DB_NAME, DB_USERNAME, DB_PASSWORD } =
+  process.env;
+
+if (!DB_HOSTNAME || !DB_PORT || !DB_DB_NAME || !DB_USERNAME || !DB_PASSWORD) {
+  throw new Error('One or more DB environment variables are not set');
 }
 
-export const client = postgres(process.env.POSTGRES_URL);
+const connectionString = `postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOSTNAME}:${DB_PORT}/${DB_DB_NAME}`;
+
+export const client = postgres(connectionString);
 export const db = drizzle(client, { schema });
