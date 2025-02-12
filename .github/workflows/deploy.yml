@@ -21,7 +21,7 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Criar pacote ZIP para o Beanstalk
-        run: zip -r app.zip * -x "node_modules/*" ".git/*" ".github/*"
+        run: zip -r app.zip . -x "node_modules/*" ".git/*" ".github/*"
 
       - name: Enviar ZIP para S3
         run: aws s3 cp app.zip s3://${{ secrets.S3_BUCKET_NAME }}/app.zip
