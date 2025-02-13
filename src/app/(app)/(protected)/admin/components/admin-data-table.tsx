@@ -11,7 +11,7 @@ import {
   SortingState,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { getAllSpaces } from '@/lib/db/queries/spaces';
 import { getAllResources } from '@/lib/db/queries/resources';
 
@@ -19,7 +19,6 @@ import {
   columnsResources,
   columnsSpaces,
 } from '@/app/(app)/(protected)/admin/components/columns';
-import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -37,6 +36,23 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { FormError } from '@/components/form-error';
+import { FormSuccess } from '@/components/form-success';
+import { SpacesFormSchema, ResourcesFormSchema } from '../schema';
+import { createdResourcesAction, createdSpacesAction } from '../action';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export function DataTableAdmin() {
   const [selectedType, setSelectedType] = useState<'spaces' | 'resources'>(
@@ -45,6 +61,11 @@ export function DataTableAdmin() {
   const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [isAddingNew, setIsAddingNew] = useState(false);
+  const [newRowData, setNewRowData] = useState<any>({});
+  const [errors, setErrors] = useState<string[] | undefined>([]);
+  const [success, setSuccess] = useState<string | undefined>('');
+  const [isPending, startTransition] = useTransition();
 
   const columns = selectedType === 'spaces' ? columnsSpaces : columnsResources;
 
@@ -63,6 +84,85 @@ export function DataTableAdmin() {
 
     fetchData();
   }, [selectedType]);
+
+  const formSpace = useForm<z.infer<typeof SpacesFormSchema>>({
+    resolver: zodResolver(SpacesFormSchema),
+    defaultValues: {
+      name: '',
+      capacity: 0,
+      description: '',
+    },
+  });
+
+  const formResource = useForm<z.infer<typeof ResourcesFormSchema>>({
+    resolver: zodResolver(ResourcesFormSchema),
+    defaultValues: {
+      name: '',
+      quantity: 0,
+    },
+  });
+
+  const handleAddNew = () => {
+    setIsAddingNew(true);
+    setNewRowData({});
+  };
+
+  const handleCancelNew = () => {
+    setIsAddingNew(false);
+    setNewRowData({});
+  };
+
+  const handleSubmitSpace = () => {
+    const validatedFields = SpacesFormSchema.safeParse(newRowData);
+
+    if (!validatedFields.success) {
+      console.log(validatedFields.error.errors);
+
+      const errorMessages = validatedFields.error.errors.map(
+        (err) => `${err.path[0]}: ${err.message}`,
+      );
+
+      setErrors(errorMessages);
+      return;
+    }
+
+    const result = createdSpacesAction(validatedFields.data);
+
+    if (!result) {
+      setErrors(['Ocorreu um erro no servidor, por favor, tente mais tarde']);
+    }
+
+    setSuccess('Item criado');
+    setIsAddingNew(false);
+    setData([...data, validatedFields.data]);
+    return;
+  };
+
+  const handleSubmitResource = () => {
+    const validatedFields = ResourcesFormSchema.safeParse(newRowData);
+
+    if (!validatedFields.success) {
+      console.log(validatedFields.error.errors);
+
+      const errorMessages = validatedFields.error.errors.map(
+        (err) => `${err.path[0]}: ${err.message}`,
+      );
+
+      setErrors(errorMessages);
+      return;
+    }
+
+    const result = createdResourcesAction(validatedFields.data);
+
+    if (!result) {
+      setErrors(['Ocorreu um erro no servidor, por favor, tente mais tarde']);
+    }
+
+    setSuccess('Item criado');
+    setIsAddingNew(false);
+    setData([...data, validatedFields.data]);
+    return;
+  };
 
   const table = useReactTable({
     data,
@@ -95,8 +195,12 @@ export function DataTableAdmin() {
           >
             Recursos
           </Button>
+          <Button onClick={handleAddNew}>
+            Criar {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
+          </Button>
         </div>
         <div className="border dark:bg-slate-900">
+          <FormSuccess message={success} />
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -161,8 +265,85 @@ export function DataTableAdmin() {
                   </TableCell>
                 </TableRow>
               )}
+              {isAddingNew && (
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>
+                      {selectedType === 'spaces' ? (
+                        <Form {...formSpace}>
+                          <form
+                            onSubmit={formSpace.handleSubmit(handleSubmitSpace)}
+                          >
+                            <FormField
+                              control={formSpace.control}
+                              name={
+                                column.id! as
+                                  | 'name'
+                                  | 'description'
+                                  | 'capacity'
+                              }
+                              render={({ field: formField }) => (
+                                <FormItem>
+                                  <FormLabel />
+                                  <FormControl>
+                                    <Input
+                                      {...formField}
+                                      disabled={isPending}
+                                    />
+                                  </FormControl>
+                                  <FormDescription />
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </form>
+                        </Form>
+                      ) : (
+                        <Form {...formResource}>
+                          <form
+                            onSubmit={formResource.handleSubmit(
+                              handleSubmitResource,
+                            )}
+                          >
+                            <FormField
+                              control={formResource.control}
+                              name={column.id! as 'name' | 'quantity'}
+                              render={({ field: formField }) => (
+                                <FormItem>
+                                  <FormLabel />
+                                  <FormControl>
+                                    <Input
+                                      {...formField}
+                                      disabled={isPending}
+                                    />
+                                  </FormControl>
+                                  <FormDescription />
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </form>
+                        </Form>
+                      )}
+                    </TableCell>
+                  ))}
+                  <TableCell>
+                    {selectedType === 'spaces' ? (
+                      <Button onClick={handleSubmitSpace}>Salvar</Button>
+                    ) : (
+                      <Button onClick={handleSubmitResource}>Salvar</Button>
+                    )}
+                    <Button variant="outline" onClick={handleCancelNew}>
+                      Cancelar
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          <div className="flex gap-2">
+            {errors?.map((error) => <FormError key={error} message={error} />)}
+          </div>
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button

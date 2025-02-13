@@ -23,3 +23,20 @@ export const getSpaceById = async (id: string) => {
     return null;
   }
 };
+
+export const createSpace = async (
+  name: string,
+  capacity: number,
+  description: string,
+) => {
+  try {
+    const [space] = await db
+      .insert(spaces)
+      .values({ name, capacity, description })
+      .returning();
+
+    return space;
+  } catch {
+    return null;
+  }
+};

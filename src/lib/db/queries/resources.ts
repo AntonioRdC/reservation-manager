@@ -12,3 +12,16 @@ export const getAllResources = async () => {
     return null;
   }
 };
+
+export const createRosource = async (name: string, quantity: number) => {
+  try {
+    const [resource] = await db
+      .insert(resources)
+      .values({ name, quantity })
+      .returning();
+
+    return resource;
+  } catch {
+    return null;
+  }
+};
