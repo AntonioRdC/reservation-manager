@@ -23,6 +23,7 @@ export const {
   signOut,
   unstable_update,
 } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/sign-in',
     error: '/error',

@@ -11,6 +11,14 @@ export default {
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+          redirect_uri: process.env.GOOGLE_CALLBACKURL,
+        },
+      },
     }),
     Credentials({
       async authorize(credentials) {
