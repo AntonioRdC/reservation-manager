@@ -1,6 +1,6 @@
 import { AlertCircle } from 'lucide-react';
 
-import { ReservationForm } from '@/app/(app)/(booking)/reservation/components/reservation-form';
+import { ReservationForm } from '@/app/(app)/(reservation)/reservation/components/reservation-form';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getAllResources } from '@/lib/db/queries/resources';
 import { getAllSpaces } from '@/lib/db/queries/spaces';

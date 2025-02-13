@@ -1,4 +1,4 @@
-import { ReservationStatus } from '@/app/(app)/(booking)/dashboard/reservation-status';
+import { ReservationStatus } from '@/app/(app)/(reservation)/dashboard/reservation-status';
 
 export default async function DashboardPage() {
   return (

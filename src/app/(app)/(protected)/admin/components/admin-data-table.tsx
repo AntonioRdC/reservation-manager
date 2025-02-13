@@ -11,21 +11,16 @@ import {
   SortingState,
   getSortedRowModel,
 } from '@tanstack/react-table';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getAllSpaces } from '@/lib/db/queries/spaces';
+import { getAllResources } from '@/lib/db/queries/resources';
 
 import {
-  cancelledBooking,
-  confirmedBooking,
-} from '@/app/(app)/(protected)/admin/manager/actions';
-
-import { columns } from '@/app/(app)/(protected)/admin/manager/components/columns';
-import {
-  BookingData,
-  Booking,
-} from '@/app/(app)/(protected)/admin/manager/types';
+  columnsResources,
+  columnsSpaces,
+} from '@/app/(app)/(protected)/admin/components/columns';
 import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,16 +38,31 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-interface DataTableProps {
-  data: BookingData[];
-}
-
-export default function DataTable({ data: initialData }: DataTableProps) {
-  const user = useCurrentUser();
-
-  const [data, setData] = useState(initialData);
+export function DataTableAdmin() {
+  const [selectedType, setSelectedType] = useState<'spaces' | 'resources'>(
+    'spaces',
+  );
+  const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const columns = selectedType === 'spaces' ? columnsSpaces : columnsResources;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result =
+          selectedType === 'spaces'
+            ? await getAllSpaces()
+            : await getAllResources();
+        setData(result!);
+      } catch (error) {
+        setData([]);
+      }
+    };
+
+    fetchData();
+  }, [selectedType]);
 
   const table = useReactTable({
     data,
@@ -69,42 +79,24 @@ export default function DataTable({ data: initialData }: DataTableProps) {
     },
   });
 
-  const updateBookingStatus = (updatedBooking: Booking) => {
-    setData((prevData) =>
-      prevData.map((item) => {
-        return item.booking.id === updatedBooking.id
-          ? { ...item, booking: updatedBooking }
-          : item;
-      }),
-    );
-  };
-
-  const handleConfirmed = async (booking: Booking) => {
-    const updatedBooking = await confirmedBooking(user, booking.id);
-    updateBookingStatus(updatedBooking!);
-  };
-
-  const handleCancel = async (booking: Booking) => {
-    const updatedBooking = await cancelledBooking(user, booking.id);
-    updateBookingStatus(updatedBooking!);
-  };
-
   return (
     <div className="flex max-h-screen w-full m-auto gap-4">
       <div className="flex-auto">
+        <div className="flex gap-4 mb-4">
+          <Button
+            variant={selectedType === 'spaces' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('spaces')}
+          >
+            Espaços
+          </Button>
+          <Button
+            variant={selectedType === 'resources' ? 'default' : 'outline'}
+            onClick={() => setSelectedType('resources')}
+          >
+            Recursos
+          </Button>
+        </div>
         <div className="border dark:bg-slate-900">
-          <div className="flex items-center py-4 mx-4">
-            <Input
-              placeholder="Filtrar por email"
-              value={
-                (table.getColumn('email')?.getFilterValue() as string) ?? ''
-              }
-              onChange={(event) =>
-                table.getColumn('email')?.setFilterValue(event.target.value)
-              }
-              className="max-w-sm"
-            />
-          </div>
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
@@ -146,38 +138,14 @@ export default function DataTable({ data: initialData }: DataTableProps) {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Ações</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
-                          {row.original.booking.status === 'REQUESTED' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleConfirmed(row.original.booking)
-                                }
-                              >
-                                Aprovar agendamento
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleCancel(row.original.booking)
-                                }
-                              >
-                                Cancelar agendamento
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                          {row.original.booking.status === 'CONFIRMED' && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleCancel(row.original.booking)
-                                }
-                              >
-                                Cancelar agendamento
-                              </DropdownMenuItem>
-                            </>
-                          )}
+                          <DropdownMenuItem>
+                            Editar{' '}
+                            {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            Excluir{' '}
+                            {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>

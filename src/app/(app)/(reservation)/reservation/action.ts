@@ -7,7 +7,7 @@ import { putS3generatePresignedUrl } from '@/lib/aws/aws';
 import { createBooking } from '@/lib/db/queries/bookings';
 import { currentUser } from '@/lib/auth/hooks/get-current-user';
 
-import { ReservationFormSchema } from '@/app/(app)/(booking)/reservation/schema';
+import { ReservationFormSchema } from '@/app/(app)/(reservation)/reservation/schema';
 
 export const createBookingAction = async (
   values: z.infer<typeof ReservationFormSchema>,

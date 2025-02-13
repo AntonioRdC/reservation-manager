@@ -7,14 +7,14 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
-import { createBookingAction } from '@/app/(app)/(booking)/reservation/action';
+import { createBookingAction } from '@/app/(app)/(reservation)/reservation/action';
 
-import { CategorySelector } from '@/app/(app)/(booking)/reservation/components/category-selector';
-import { ResourceSelector } from '@/app/(app)/(booking)/reservation/components/resource-selector';
-import { DateTimePicker } from '@/app/(app)/(booking)/reservation/components/date-time-picker';
-import { ImageUploader } from '@/app/(app)/(booking)/reservation/components/image-uploader';
-import { ReservationFormSchema } from '@/app/(app)/(booking)/reservation/schema';
-import { categoryType } from '@/app/(app)/(booking)/reservation/docs';
+import { CategorySelector } from '@/app/(app)/(reservation)/reservation/components/category-selector';
+import { ResourceSelector } from '@/app/(app)/(reservation)/reservation/components/resource-selector';
+import { DateTimePicker } from '@/app/(app)/(reservation)/reservation/components/date-time-picker';
+import { ImageUploader } from '@/app/(app)/(reservation)/reservation/components/image-uploader';
+import { ReservationFormSchema } from '@/app/(app)/(reservation)/reservation/schema';
+import { categoryType } from '@/app/(app)/(reservation)/reservation/docs';
 import { FormSuccess } from '@/components/form-success';
 import { Separator } from '@/components/ui/separator';
 import { FormError } from '@/components/form-error';

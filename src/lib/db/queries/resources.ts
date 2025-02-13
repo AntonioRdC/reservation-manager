@@ -1,3 +1,5 @@
+'use server';
+
 import { db } from '@/lib/db/drizzle';
 import { resources } from '@/lib/db/schema';
 

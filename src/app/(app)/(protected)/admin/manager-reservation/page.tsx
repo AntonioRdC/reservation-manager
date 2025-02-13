@@ -1,15 +1,8 @@
-import { Metadata } from 'next';
-
 import { getAllBookings } from '@/lib/db/queries/bookings';
 import { getUserById } from '@/lib/db/queries/users';
 import { getSpaceById } from '@/lib/db/queries/spaces';
 
-import DataTable from '@/app/(app)/(protected)/admin/manager/components/admin-data-table';
-
-export const metadata: Metadata = {
-  title: 'Admin',
-  description: 'administration app',
-};
+import { DataTableReservation } from '@/app/(app)/(protected)/admin/manager-reservation/components/reservation-data-table';
 
 export default async function AdminPage() {
   const bookings = await getAllBookings();
@@ -33,7 +26,7 @@ export default async function AdminPage() {
         Tabela de requisições das reservas
       </h1>
 
-      <DataTable data={data} />
+      <DataTableReservation data={data} />
     </section>
   );
 }

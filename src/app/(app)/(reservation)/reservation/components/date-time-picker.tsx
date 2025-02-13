@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 
 import { cn } from '@/lib/utils';
 
-import { timeOptions } from '@/app/(app)/(booking)/reservation/docs';
+import { timeOptions } from '@/app/(app)/(reservation)/reservation/docs';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import {

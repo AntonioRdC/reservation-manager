@@ -5,7 +5,7 @@ import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import {
   getUserBookings,
   UserBookings,
-} from '@/app/(app)/(booking)/dashboard/action';
+} from '@/app/(app)/(reservation)/dashboard/action';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
