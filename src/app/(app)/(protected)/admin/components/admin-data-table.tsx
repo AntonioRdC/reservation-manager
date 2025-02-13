@@ -54,6 +54,42 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+const fieldsSpaces = [
+  {
+    name: 'name',
+    type: 'name',
+    placeholder: 'Nome',
+    label: 'Nome',
+  },
+  {
+    name: 'description',
+    type: 'text',
+    placeholder: 'Descrição',
+    label: 'Descrição',
+  },
+  {
+    name: 'capacity',
+    type: 'number',
+    placeholder: 'Capacidade',
+    label: 'Capacidade',
+  },
+];
+
+const fieldsResources = [
+  {
+    name: 'name',
+    type: 'name',
+    placeholder: 'Nome',
+    label: 'Nome',
+  },
+  {
+    name: 'quantity',
+    type: 'number',
+    placeholder: 'Quintidade',
+    label: 'Quintidade',
+  },
+];
+
 export function DataTableAdmin() {
   const [selectedType, setSelectedType] = useState<'spaces' | 'resources'>(
     'spaces',
@@ -112,21 +148,8 @@ export function DataTableAdmin() {
     setNewRowData({});
   };
 
-  const handleSubmitSpace = () => {
-    const validatedFields = SpacesFormSchema.safeParse(newRowData);
-
-    if (!validatedFields.success) {
-      console.log(validatedFields.error.errors);
-
-      const errorMessages = validatedFields.error.errors.map(
-        (err) => `${err.path[0]}: ${err.message}`,
-      );
-
-      setErrors(errorMessages);
-      return;
-    }
-
-    const result = createdSpacesAction(validatedFields.data);
+  const handleSubmitSpace = (values: z.infer<typeof SpacesFormSchema>) => {
+    const result = createdSpacesAction(values);
 
     if (!result) {
       setErrors(['Ocorreu um erro no servidor, por favor, tente mais tarde']);
@@ -134,25 +157,14 @@ export function DataTableAdmin() {
 
     setSuccess('Item criado');
     setIsAddingNew(false);
-    setData([...data, validatedFields.data]);
+    setData([...data, values]);
     return;
   };
 
-  const handleSubmitResource = () => {
-    const validatedFields = ResourcesFormSchema.safeParse(newRowData);
-
-    if (!validatedFields.success) {
-      console.log(validatedFields.error.errors);
-
-      const errorMessages = validatedFields.error.errors.map(
-        (err) => `${err.path[0]}: ${err.message}`,
-      );
-
-      setErrors(errorMessages);
-      return;
-    }
-
-    const result = createdResourcesAction(validatedFields.data);
+  const handleSubmitResource = (
+    values: z.infer<typeof ResourcesFormSchema>,
+  ) => {
+    const result = createdResourcesAction(values);
 
     if (!result) {
       setErrors(['Ocorreu um erro no servidor, por favor, tente mais tarde']);
@@ -160,7 +172,7 @@ export function DataTableAdmin() {
 
     setSuccess('Item criado');
     setIsAddingNew(false);
-    setData([...data, validatedFields.data]);
+    setData([...data, values]);
     return;
   };
 
@@ -266,77 +278,111 @@ export function DataTableAdmin() {
                 </TableRow>
               )}
               {isAddingNew && (
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell key={column.id}>
-                      {selectedType === 'spaces' ? (
-                        <Form {...formSpace}>
-                          <form
-                            onSubmit={formSpace.handleSubmit(handleSubmitSpace)}
-                          >
-                            <FormField
-                              control={formSpace.control}
-                              name={
-                                column.id! as
-                                  | 'name'
-                                  | 'description'
-                                  | 'capacity'
-                              }
-                              render={({ field: formField }) => (
-                                <FormItem>
-                                  <FormLabel />
-                                  <FormControl>
-                                    <Input
-                                      {...formField}
-                                      disabled={isPending}
-                                    />
-                                  </FormControl>
-                                  <FormDescription />
-                                  <FormMessage />
-                                </FormItem>
+                <TableRow key="new-row">
+                  {selectedType === 'spaces' ? (
+                    <>
+                      {fieldsSpaces.map((field) => (
+                        <TableCell key={field.name}>
+                          <Form {...formSpace}>
+                            <form
+                              onSubmit={formSpace.handleSubmit(
+                                handleSubmitSpace,
                               )}
-                            />
-                          </form>
-                        </Form>
-                      ) : (
-                        <Form {...formResource}>
-                          <form
-                            onSubmit={formResource.handleSubmit(
-                              handleSubmitResource,
-                            )}
-                          >
-                            <FormField
-                              control={formResource.control}
-                              name={column.id! as 'name' | 'quantity'}
-                              render={({ field: formField }) => (
-                                <FormItem>
-                                  <FormLabel />
-                                  <FormControl>
-                                    <Input
-                                      {...formField}
-                                      disabled={isPending}
-                                    />
-                                  </FormControl>
-                                  <FormDescription />
-                                  <FormMessage />
-                                </FormItem>
+                            >
+                              <FormField
+                                key={field.name}
+                                control={formSpace.control}
+                                name={
+                                  field.name as
+                                    | 'name'
+                                    | 'description'
+                                    | 'capacity'
+                                }
+                                render={({ field: formField }) => (
+                                  <FormItem>
+                                    <FormLabel />
+                                    <FormControl>
+                                      <Input
+                                        {...formField}
+                                        disabled={isPending}
+                                        placeholder={field.placeholder}
+                                        type={field.type}
+                                      />
+                                    </FormControl>
+                                    <FormDescription />
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </form>
+                          </Form>
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <Button
+                          disabled={isPending}
+                          type="submit"
+                          className="flex-1 w-full bg-rose-500 hover:bg-rose-600"
+                          onClick={formSpace.handleSubmit(handleSubmitSpace)}
+                        >
+                          Salvar
+                        </Button>
+                        <Button variant="outline" onClick={handleCancelNew}>
+                          Cancelar
+                        </Button>
+                      </TableCell>
+                    </>
+                  ) : (
+                    <>
+                      {fieldsResources.map((field) => (
+                        <TableCell key={field.name}>
+                          <Form {...formResource}>
+                            <form
+                              onSubmit={formResource.handleSubmit(
+                                handleSubmitResource,
                               )}
-                            />
-                          </form>
-                        </Form>
-                      )}
-                    </TableCell>
-                  ))}
-                  <TableCell>
-                    {selectedType === 'spaces' ? (
-                      <Button onClick={handleSubmitSpace}>Salvar</Button>
-                    ) : (
-                      <Button onClick={handleSubmitResource}>Salvar</Button>
-                    )}
-                    <Button variant="outline" onClick={handleCancelNew}>
-                      Cancelar
-                    </Button>
-                  </TableCell>
+                            >
+                              <FormField
+                                key={field.name}
+                                control={formResource.control}
+                                name={field.name as 'name' | 'quantity'}
+                                render={({ field: formField }) => (
+                                  <FormItem>
+                                    <FormLabel />
+                                    <FormControl>
+                                      <Input
+                                        {...formField}
+                                        disabled={isPending}
+                                        placeholder={field.placeholder}
+                                        type={field.type}
+                                      />
+                                    </FormControl>
+                                    <FormDescription />
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </form>
+                          </Form>
+                        </TableCell>
+                      ))}
+                      <TableCell>
+                        <Button
+                          disabled={isPending}
+                          type="submit"
+                          className="flex-1 w-full bg-rose-500 hover:bg-rose-600"
+                          onClick={formResource.handleSubmit(
+                            handleSubmitResource,
+                          )}
+                        >
+                          Salvar
+                        </Button>
+                        <Button variant="outline" onClick={handleCancelNew}>
+                          Cancelar
+                        </Button>
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
               )}
             </TableBody>

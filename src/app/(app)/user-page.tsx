@@ -13,6 +13,7 @@ import {
   Layers3Icon,
   AlbumIcon,
   UserCog,
+  Building,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -60,7 +61,12 @@ export function UserPage({
             group: 'Admin',
             links: [
               {
-                href: '/admin/manager',
+                href: '/admin',
+                icon: Building,
+                label: 'Gerenciar Espaços',
+              },
+              {
+                href: '/admin/manager-reservation',
                 icon: UserCog,
                 label: 'Gerenciar Reservas',
               },

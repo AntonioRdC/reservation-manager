@@ -7,9 +7,9 @@ export const columnsSpaces: ColumnDef<{
 }>[] = [
   { id: 'name', accessorKey: 'name', header: 'Nome' },
   {
-    id: 'email',
+    id: 'descrição',
     accessorKey: 'description',
-    header: 'Email',
+    header: 'Descrição',
   },
   { id: 'capacity', accessorKey: 'capacity', header: 'Capacidade' },
 ];
