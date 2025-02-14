@@ -19,6 +19,13 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Carrega NVM
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+            export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH
+            export PATH=$(npm bin -g):$PATH
+
             git clone git@github.com:AntonioRdC/reservation-manager.git
             cd reservation-manager
             pnpm i
