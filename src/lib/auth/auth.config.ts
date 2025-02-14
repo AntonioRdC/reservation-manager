@@ -7,6 +7,7 @@ import { SignInFormSchema } from '@/app/(auth)/schema';
 import { getUserByEmail } from '@/lib/db/queries/users';
 
 export default {
+  trustHost: true,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,

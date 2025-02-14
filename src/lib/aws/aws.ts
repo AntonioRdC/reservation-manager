@@ -8,15 +8,15 @@ export const putS3generatePresignedUrl = async (
   fileType: string,
 ) => {
   const s3 = new S3Client({
-    region: 'us-east-1',
+    region: process.env.AWS_S3_BUCKET_REGION!,
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY || '',
-      secretAccessKey: process.env.AWS_SECRET_ACCESS || '',
+      accessKeyId: process.env.AWS_ACCESS_KEY!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS!,
     },
   });
 
   const params = {
-    Bucket: 'users-image-reservation-manager-894ab96a-68915705df60',
+    Bucket: process.env.AWS_S3_BUCKET_NAME!,
     Key: fileName,
     ContentType: fileType,
   };
