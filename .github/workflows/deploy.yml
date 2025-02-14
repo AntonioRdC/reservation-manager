@@ -27,6 +27,7 @@ jobs:
             export PATH=$(npm bin -g):$PATH
 
             git clone git@github.com:AntonioRdC/reservation-manager.git
+            mv .env reservation-manager/
             cd reservation-manager
             pnpm i
             pnpm build
