@@ -68,6 +68,20 @@ export const updatePasswordUser = async (id: string, password: string) => {
   }
 };
 
+export const updateAdminUser = async (id: string) => {
+  try {
+    const [user] = await db
+      .update(users)
+      .set({ role: 'ADMIN' })
+      .where(eq(users.id, id))
+      .returning();
+
+    return user;
+  } catch {
+    return null;
+  }
+};
+
 export const updateAccountUser = async (
   id: string,
   name: string,

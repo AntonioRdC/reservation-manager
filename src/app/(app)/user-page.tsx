@@ -28,6 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { updateAdminUserAction } from './action';
 
 export function UserPage({
   children,
@@ -80,6 +81,10 @@ export function UserPage({
     signOutAction(user);
   };
 
+  const handleUpdateAdmin = async () => {
+    updateAdminUserAction(user.id!);
+  };
+
   return (
     <div>
       <header className="border-b border-gray-200">
@@ -98,6 +103,11 @@ export function UserPage({
             >
               <Menu className="h-6 w-6" />
             </Button>
+            {user.role === 'USER' && (
+              <Link href="/dashboard">
+                <Button onClick={handleUpdateAdmin}>Virar ADMIN</Button>
+              </Link>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="icon" className="rounded-full">
