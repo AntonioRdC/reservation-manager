@@ -53,6 +53,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2 } from 'lucide-react';
 
 const fieldsSpaces = [
   {
@@ -106,7 +107,7 @@ export function DataTableAdmin() {
   const columns = selectedType === 'spaces' ? columnsSpaces : columnsResources;
 
   useEffect(() => {
-    const fetchData = async () => {
+    startTransition(async () => {
       try {
         const result =
           selectedType === 'spaces'
@@ -116,9 +117,7 @@ export function DataTableAdmin() {
       } catch (error) {
         setData([]);
       }
-    };
-
-    fetchData();
+    });
   }, [selectedType]);
 
   const formSpace = useForm<z.infer<typeof SpacesFormSchema>>({
@@ -197,196 +196,220 @@ export function DataTableAdmin() {
         <div className="flex gap-4 mb-4">
           <Button
             variant={selectedType === 'spaces' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('spaces')}
+            onClick={() => {
+              handleCancelNew();
+              setSelectedType('spaces');
+            }}
           >
             Espaços
           </Button>
           <Button
             variant={selectedType === 'resources' ? 'default' : 'outline'}
-            onClick={() => setSelectedType('resources')}
+            onClick={() => {
+              handleCancelNew();
+              setSelectedType('resources');
+            }}
           >
             Recursos
           </Button>
-          <Button onClick={handleAddNew}>
+          <Button
+            onClick={handleAddNew}
+            variant={isAddingNew === false ? 'default' : 'outline'}
+          >
             Criar {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
           </Button>
         </div>
-        <div className="border dark:bg-slate-900">
-          <FormSuccess message={success} />
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
+        <div className="border dark:bg-slate-900 flex items-center justify-center min-h-60">
+          {isPending ? (
+            <span className="flex">
+              <Loader2 className="animate-spin" />
+              Carregando
+            </span>
+          ) : (
+            <>
+              <FormSuccess message={success} />
+              <Table>
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </TableHead>
+                      ))}
+                      <TableHead>Ações</TableHead>
+                    </TableRow>
                   ))}
-                  <TableHead>Ações</TableHead>
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                </TableHeader>
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </TableCell>
+                        ))}
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Abrir ações</span>
+                                <GiHamburgerMenu />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>
+                                Editar{' '}
+                                {selectedType === 'spaces'
+                                  ? 'Espaço'
+                                  : 'Recurso'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>
+                                Excluir{' '}
+                                {selectedType === 'spaces'
+                                  ? 'Espaço'
+                                  : 'Recurso'}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length + 1}
+                        className="h-24 text-center"
+                      >
+                        Sem resultados
                       </TableCell>
-                    ))}
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Abrir ações</span>
-                            <GiHamburgerMenu />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem>
-                            Editar{' '}
-                            {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem>
-                            Excluir{' '}
-                            {selectedType === 'spaces' ? 'Espaço' : 'Recurso'}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length + 1}
-                    className="h-24 text-center"
-                  >
-                    Sem resultados
-                  </TableCell>
-                </TableRow>
-              )}
-              {isAddingNew && (
-                <TableRow key="new-row">
-                  {selectedType === 'spaces' ? (
-                    <>
-                      {fieldsSpaces.map((field) => (
-                        <TableCell key={field.name}>
-                          <Form {...formSpace}>
-                            <form
-                              onSubmit={formSpace.handleSubmit(
+                    </TableRow>
+                  )}
+                  {isAddingNew && (
+                    <TableRow key="new-row">
+                      {selectedType === 'spaces' ? (
+                        <>
+                          {fieldsSpaces.map((field) => (
+                            <TableCell key={field.name}>
+                              <Form {...formSpace}>
+                                <form
+                                  onSubmit={formSpace.handleSubmit(
+                                    handleSubmitSpace,
+                                  )}
+                                >
+                                  <FormField
+                                    key={field.name}
+                                    control={formSpace.control}
+                                    name={
+                                      field.name as
+                                        | 'name'
+                                        | 'description'
+                                        | 'capacity'
+                                    }
+                                    render={({ field: formField }) => (
+                                      <FormItem>
+                                        <FormLabel />
+                                        <FormControl>
+                                          <Input
+                                            {...formField}
+                                            disabled={isPending}
+                                            placeholder={field.placeholder}
+                                            type={field.type}
+                                          />
+                                        </FormControl>
+                                        <FormDescription />
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </form>
+                              </Form>
+                            </TableCell>
+                          ))}
+                          <TableCell>
+                            <Button
+                              disabled={isPending}
+                              type="submit"
+                              className="flex-1 bg-rose-500 hover:bg-rose-600 mr-3"
+                              onClick={formSpace.handleSubmit(
                                 handleSubmitSpace,
                               )}
                             >
-                              <FormField
-                                key={field.name}
-                                control={formSpace.control}
-                                name={
-                                  field.name as
-                                    | 'name'
-                                    | 'description'
-                                    | 'capacity'
-                                }
-                                render={({ field: formField }) => (
-                                  <FormItem>
-                                    <FormLabel />
-                                    <FormControl>
-                                      <Input
-                                        {...formField}
-                                        disabled={isPending}
-                                        placeholder={field.placeholder}
-                                        type={field.type}
-                                      />
-                                    </FormControl>
-                                    <FormDescription />
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </form>
-                          </Form>
-                        </TableCell>
-                      ))}
-                      <TableCell>
-                        <Button
-                          disabled={isPending}
-                          type="submit"
-                          className="flex-1 w-full bg-rose-500 hover:bg-rose-600"
-                          onClick={formSpace.handleSubmit(handleSubmitSpace)}
-                        >
-                          Salvar
-                        </Button>
-                        <Button variant="outline" onClick={handleCancelNew}>
-                          Cancelar
-                        </Button>
-                      </TableCell>
-                    </>
-                  ) : (
-                    <>
-                      {fieldsResources.map((field) => (
-                        <TableCell key={field.name}>
-                          <Form {...formResource}>
-                            <form
-                              onSubmit={formResource.handleSubmit(
+                              Salvar
+                            </Button>
+                            <Button variant="outline" onClick={handleCancelNew}>
+                              Cancelar
+                            </Button>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          {fieldsResources.map((field) => (
+                            <TableCell key={field.name}>
+                              <Form {...formResource}>
+                                <form
+                                  onSubmit={formResource.handleSubmit(
+                                    handleSubmitResource,
+                                  )}
+                                >
+                                  <FormField
+                                    key={field.name}
+                                    control={formResource.control}
+                                    name={field.name as 'name' | 'quantity'}
+                                    render={({ field: formField }) => (
+                                      <FormItem>
+                                        <FormLabel />
+                                        <FormControl>
+                                          <Input
+                                            {...formField}
+                                            disabled={isPending}
+                                            placeholder={field.placeholder}
+                                            type={field.type}
+                                          />
+                                        </FormControl>
+                                        <FormDescription />
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                </form>
+                              </Form>
+                            </TableCell>
+                          ))}
+                          <TableCell>
+                            <Button
+                              disabled={isPending}
+                              type="submit"
+                              className="flex-1 bg-rose-500 hover:bg-rose-600 mr-3"
+                              onClick={formResource.handleSubmit(
                                 handleSubmitResource,
                               )}
                             >
-                              <FormField
-                                key={field.name}
-                                control={formResource.control}
-                                name={field.name as 'name' | 'quantity'}
-                                render={({ field: formField }) => (
-                                  <FormItem>
-                                    <FormLabel />
-                                    <FormControl>
-                                      <Input
-                                        {...formField}
-                                        disabled={isPending}
-                                        placeholder={field.placeholder}
-                                        type={field.type}
-                                      />
-                                    </FormControl>
-                                    <FormDescription />
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </form>
-                          </Form>
-                        </TableCell>
-                      ))}
-                      <TableCell>
-                        <Button
-                          disabled={isPending}
-                          type="submit"
-                          className="flex-1 w-full bg-rose-500 hover:bg-rose-600"
-                          onClick={formResource.handleSubmit(
-                            handleSubmitResource,
-                          )}
-                        >
-                          Salvar
-                        </Button>
-                        <Button variant="outline" onClick={handleCancelNew}>
-                          Cancelar
-                        </Button>
-                      </TableCell>
-                    </>
+                              Salvar
+                            </Button>
+                            <Button variant="outline" onClick={handleCancelNew}>
+                              Cancelar
+                            </Button>
+                          </TableCell>
+                        </>
+                      )}
+                    </TableRow>
                   )}
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                </TableBody>
+              </Table>
+            </>
+          )}
           <div className="flex gap-2">
             {errors?.map((error) => <FormError key={error} message={error} />)}
           </div>

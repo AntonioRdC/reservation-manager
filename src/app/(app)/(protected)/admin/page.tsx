@@ -1,5 +1,3 @@
-import { Metadata } from 'next';
-
 import { DataTableAdmin } from '@/app/(app)/(protected)/admin/components/admin-data-table';
 
 export default async function AdminPage() {

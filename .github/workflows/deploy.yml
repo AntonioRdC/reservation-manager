@@ -26,6 +26,7 @@ jobs:
             export PATH=$HOME/.local/bin:$HOME/bin:/usr/local/bin:$PATH
             export PATH=$(npm bin -g):$PATH
 
+            rm -rf reservation-manager
             git clone git@github.com:AntonioRdC/reservation-manager.git
             cp .env reservation-manager/
             cd reservation-manager
