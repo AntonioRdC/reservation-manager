@@ -2,7 +2,7 @@ import { getAllBookings } from '@/lib/db/queries/bookings';
 import { getUserById } from '@/lib/db/queries/users';
 import { getSpaceById } from '@/lib/db/queries/spaces';
 
-import { DataTableReservation } from '@/app/(app)/(protected)/admin/manager-reservation/components/reservation-data-table';
+import { DataTableReservation } from '@/app/(app)/(protected)/admin/reservation/components/reservation-data-table';
 
 export default async function AdminPage() {
   const bookings = await getAllBookings();

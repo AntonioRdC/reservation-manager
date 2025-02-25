@@ -16,13 +16,13 @@ import { useState } from 'react';
 import {
   cancelledBooking,
   confirmedBooking,
-} from '@/app/(app)/(protected)/admin/manager-reservation/actions';
+} from '@/app/(app)/(protected)/admin/reservation/actions';
 
-import { columns } from '@/app/(app)/(protected)/admin/manager-reservation/components/columns';
+import { columns } from '@/app/(app)/(protected)/admin/reservation/components/columns';
 import {
   BookingData,
   Booking,
-} from '@/app/(app)/(protected)/admin/manager-reservation/types';
+} from '@/app/(app)/(protected)/admin/reservation/types';
 import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -28,11 +28,12 @@ export const createSpace = async (
   name: string,
   capacity: number,
   description: string,
+  image: string | null,
 ) => {
   try {
     const [space] = await db
       .insert(spaces)
-      .values({ name, capacity, description })
+      .values({ name, capacity, description, image })
       .returning();
 
     return space;

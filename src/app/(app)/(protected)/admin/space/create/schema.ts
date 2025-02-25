@@ -1,23 +1,5 @@
 import { z } from 'zod';
 
-export const ResourcesFormSchema = z.object({
-  name: z
-    .string({
-      required_error: 'O nome é obrigatório',
-      invalid_type_error: 'O nome deve ser um texto',
-    })
-    .min(1, 'O nome deve ter pelo menos 1 caractere'),
-  quantity: z.preprocess(
-    (val) => Number(val),
-    z
-      .number({
-        required_error: 'A quantidade é obrigatório',
-        invalid_type_error: 'A quantidade deve ser um número',
-      })
-      .min(0, 'A quantidade não pode ser negativa'),
-  ),
-});
-
 export const SpacesFormSchema = z.object({
   name: z
     .string({
@@ -38,4 +20,20 @@ export const SpacesFormSchema = z.object({
       })
       .min(1, 'A capacidade deve ser maior ou igual a 1'),
   ),
+  image: z
+    .union([
+      z
+        .instanceof(File)
+        .refine(
+          (file) => ['image/jpeg', 'image/png'].includes(file.type),
+          'O formato da imagem deve ser JPEG, PNG.',
+        )
+        .refine(
+          (file) => file.size <= 5 * 1024 * 1024,
+          'A imagem deve ter no máximo 5MB.',
+        ),
+      z.string().url('A imagem deve ser uma URL válida.'),
+    ])
+    .optional()
+    .nullable(),
 });

@@ -19,7 +19,7 @@ export const createBookingAction = async (
     return { error: 'Campos inválidos!' };
   }
 
-  const { space, category, date, startTime, endTime, image, resources } =
+  const { space, category, date, startTime, endTime, resources } =
     validatedFields.data;
 
   if (!user?.id) {
@@ -54,7 +54,6 @@ export const createBookingAction = async (
     userId: user.id,
     startTime: parsedStartTime,
     endTime: parsedEndTime,
-    image: null,
     category,
   };
 
@@ -71,25 +70,6 @@ export const createBookingAction = async (
       if (!resource) {
         return { error: 'Ocorreu um erro, por favor tente mais tarde' };
       }
-    }
-
-    if (image instanceof File) {
-      const presignedUrl = await putS3generatePresignedUrl(
-        image.name,
-        image.type,
-      );
-
-      if (presignedUrl === null) {
-        return { error: 'Ocorreu um erro, por favor tente mais tarde' };
-      }
-
-      await fetch(presignedUrl, {
-        method: 'PUT',
-        body: image,
-        headers: {
-          'Content-Type': image.type,
-        },
-      });
     }
 
     return { success: true };

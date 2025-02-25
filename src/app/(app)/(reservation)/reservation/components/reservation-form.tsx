@@ -57,7 +57,6 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
       startTime: '06:00 AM',
       endTime: '10:00 PM',
       resources: [],
-      image: undefined,
     },
   });
 
@@ -176,25 +175,6 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
                 <ResourceSelector
                   resources={resources}
                   onResourcesChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Separator />
-
-        {/* Upload de Imagem */}
-        <FormField
-          control={form.control}
-          name="image"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Imagem</FormLabel>
-              <FormControl>
-                <ImageUploader
-                  onImageChange={(image) => field.onChange(image)}
                 />
               </FormControl>
               <FormMessage />

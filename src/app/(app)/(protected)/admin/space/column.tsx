@@ -1,6 +1,6 @@
 import { ColumnDef } from '@tanstack/react-table';
 
-export const columnsSpaces: ColumnDef<{
+export const columns: ColumnDef<{
   name: string;
   description: string | null;
   capacity: number;
@@ -13,9 +13,3 @@ export const columnsSpaces: ColumnDef<{
   },
   { id: 'capacity', accessorKey: 'capacity', header: 'Capacidade' },
 ];
-
-export const columnsResources: ColumnDef<{ name: string; quantity: number }>[] =
-  [
-    { id: 'name', accessorKey: 'name', header: 'Nome' },
-    { id: 'quantity', accessorKey: 'quantity', header: 'Quantidade' },
-  ];

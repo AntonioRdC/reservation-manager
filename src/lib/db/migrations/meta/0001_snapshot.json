@@ -1,6 +1,6 @@
 {
-  "id": "6b824c49-1762-475a-bc01-a9c60c6199a4",
-  "prevId": "b3b78c9b-6700-4b74-bd65-83eb476551f6",
+  "id": "d0dada9f-727b-4421-8491-2f38ceea0e66",
+  "prevId": "064e1112-3b78-4fde-b659-abebe8505134",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -190,12 +190,6 @@
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
-        },
-        "image": {
-          "name": "image",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "category": {
           "name": "category",
@@ -488,6 +482,12 @@
         },
         "description": {
           "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image": {
+          "name": "image",
           "type": "text",
           "primaryKey": false,
           "notNull": false

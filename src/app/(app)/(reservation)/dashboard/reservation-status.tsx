@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
-import { formatStartTime } from './utils';
+import { formatStartTime } from '../../utils';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',

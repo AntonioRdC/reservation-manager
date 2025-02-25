@@ -3,7 +3,7 @@ import { ArrowUpDown } from 'lucide-react';
 import { ptBR } from 'date-fns/locale';
 import { format } from 'date-fns';
 
-import { BookingData } from '@/app/(app)/(protected)/admin/manager-reservation/types';
+import { BookingData } from '@/app/(app)/(protected)/admin/reservation/types';
 import { Button } from '@/components/ui/button';
 
 const categoryTranslations: Record<string, string> = {

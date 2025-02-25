@@ -1,3 +1,5 @@
+'use server';
+
 import { asc, eq } from 'drizzle-orm';
 
 import { Booking, bookings, NewBooking } from '@/lib/db/schema';
@@ -27,6 +29,21 @@ export const getBookingsById = async (
       .orderBy(asc(bookings.createdAt));
 
     return bookingsList;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getBookingById = async (
+  bookingId: string,
+): Promise<Booking | null> => {
+  try {
+    const [booking] = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.id, bookingId));
+
+    return booking;
   } catch (error) {
     return null;
   }
