@@ -1,3 +1,5 @@
+'use server';
+
 import { eq, sql } from 'drizzle-orm';
 
 import { users } from '@/lib/db/schema';

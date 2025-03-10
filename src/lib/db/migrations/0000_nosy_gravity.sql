@@ -26,7 +26,6 @@ CREATE TABLE "booking" (
 	"user_id" uuid NOT NULL,
 	"start_time" timestamp NOT NULL,
 	"end_time" timestamp NOT NULL,
-	"image" text,
 	"category" varchar(50) NOT NULL,
 	"status" varchar(20) DEFAULT 'REQUESTED' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
@@ -67,6 +66,7 @@ CREATE TABLE "space" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"name" varchar(100) NOT NULL,
 	"description" text,
+	"image" text,
 	"capacity" integer NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL

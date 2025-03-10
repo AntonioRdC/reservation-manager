@@ -31,12 +31,12 @@ export const createSpace = async (
   image: string | null,
 ) => {
   try {
-    const [space] = await db
+    const [newSpace] = await db
       .insert(spaces)
       .values({ name, capacity, description, image })
       .returning();
 
-    return space;
+    return newSpace;
   } catch {
     return null;
   }

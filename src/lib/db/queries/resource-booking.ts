@@ -1,3 +1,5 @@
+'use server';
+
 import { NewResourceBooking, resourceBookings } from '@/lib/db/schema';
 import { db } from '@/lib/db/drizzle';
 import { eq } from 'drizzle-orm';

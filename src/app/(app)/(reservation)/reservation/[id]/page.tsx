@@ -57,40 +57,37 @@ const ReservationLayout = () => {
           </Badge>
         </CardHeader>
         <CardContent>
-          <div>
-            <span className="text-rose-400">
-              {new Date(reservation.startTime).toLocaleString()} -{' '}
-              {new Date(reservation.endTime).toLocaleString()}
-            </span>
-            <br />
-            Espaço: {reservation.space.name}
-            <br />
-            Categoria: {categoryMap[reservation.category]}
-          </div>
-
-          {reservation.image && (
-            <div className="mt-2 flex items-center gap-2">
-              <Avatar className="w-16 h-16">
-                <AvatarImage
-                  src={reservation.image}
-                  alt="Imagem do agendamento"
-                />
-              </Avatar>
+          <div className="mt-2 flex flex-col lg:flex-row items-center gap-2">
+            {reservation.space.image && (
+              <img
+                src={reservation.space.image}
+                alt="Imagem do espaço"
+                className="object-cover w-full max-w-md h-auto rounded-lg"
+              />
+            )}
+            <div className="flex w-full flex-col items-center lg:items-start lg:ml-4">
+              <span className="text-rose-400">
+                {new Date(reservation.startTime).toLocaleString()} -{' '}
+                {new Date(reservation.endTime).toLocaleString()}
+              </span>
+              <br />
+              Espaço: {reservation.space.name}
+              <br />
+              Categoria: {categoryMap[reservation.category]}
+              {reservation.resources && reservation.resources.length > 0 && (
+                <>
+                  <h4 className="font-semibold">Recursos Utilizados:</h4>
+                  <ul className="space-y-1">
+                    {reservation.resources.map((resource) => (
+                      <li key={resource.id}>
+                        {resource.name} - Quantidade: {resource.quantity}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
             </div>
-          )}
-
-          {reservation.resources && reservation.resources.length > 0 && (
-            <>
-              <h4 className="font-semibold">Recursos Utilizados:</h4>
-              <ul className="space-y-1">
-                {reservation.resources.map((resource) => (
-                  <li key={resource.id}>
-                    {resource.name} - Quantidade: {resource.quantity}
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
+          </div>
         </CardContent>
       </Card>
     </section>

@@ -1,6 +1,6 @@
 import { createSpace } from '@/lib/db/queries/spaces';
 import { putS3generatePresignedUrl } from '@/lib/aws/aws';
-import { SpacesFormSchema } from '../../schema';
+import { SpacesFormSchema } from './schema';
 import { z } from 'zod';
 
 export const createdSpacesAction = async (
@@ -38,7 +38,11 @@ export const createdSpacesAction = async (
     }
   }
 
+  console.log(name, capacity, description, imageUrl, image);
+
   const space = await createSpace(name, capacity, description, imageUrl);
+
+  console.log(space);
 
   return space;
 };

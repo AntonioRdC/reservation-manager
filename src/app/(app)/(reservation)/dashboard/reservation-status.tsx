@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { formatStartTime } from '../../utils';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',
@@ -56,27 +58,24 @@ export function ReservationStatus() {
               </Badge>
             </CardHeader>
             <CardContent>
-              <div>
-                <span className="text-rose-400">
-                  {new Date(booking.startTime).toLocaleString()} -{' '}
-                  {new Date(booking.endTime).toLocaleString()}
-                </span>
-                <br />
-                Espaço: {booking.space.name}
-                <br />
-                Categoria: {categoryMap[booking.category]}
-              </div>
-
-              {booking.image && (
-                <div className="mt-2 flex items-center gap-2">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage
-                      src={booking.image}
-                      alt="Imagem do agendamento"
-                    />
-                  </Avatar>
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-rose-400">
+                    {new Date(booking.startTime).toLocaleString()} -{' '}
+                    {new Date(booking.endTime).toLocaleString()}
+                  </span>
+                  <br />
+                  Espaço: {booking.space.name}
+                  <br />
+                  Categoria: {categoryMap[booking.category]}
                 </div>
-              )}
+
+                <Link href={`/reservation/${booking.id}`}>
+                  <Button variant="link" className="text-rose-400">
+                    Ver detalhes
+                  </Button>
+                </Link>
+              </div>
 
               {booking.resources && booking.resources.length > 0 && (
                 <>

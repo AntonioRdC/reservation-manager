@@ -14,11 +14,10 @@ export default async function BookingPage() {
       <div className="flex flex-col items-center justify-center text-center py-12">
         <AlertCircle className="h-12 w-12 text-rose-500 mb-4" />
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
-          Nenhuma atividade registrada
+          Sem Espaços Disponíveis
         </h3>
         <p className="text-sm text-gray-500 max-w-sm">
-          Quando você realizar ações como fazer login ou atualizar sua conta,
-          elas aparecerão aqui.
+          Por favor, volte mais tarde para fazer uma reserva.
         </p>
       </div>
     );

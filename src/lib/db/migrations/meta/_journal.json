@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1740363582341,
-      "tag": "0000_keen_alex_power",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1740420407904,
-      "tag": "0001_cloudy_kulan_gath",
+      "when": 1740506523946,
+      "tag": "0000_nosy_gravity",
       "breakpoints": true
     }
   ]

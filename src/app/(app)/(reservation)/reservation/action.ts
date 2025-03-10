@@ -3,7 +3,6 @@
 import * as z from 'zod';
 
 import { createResourceBooking } from '@/lib/db/queries/resource-booking';
-import { putS3generatePresignedUrl } from '@/lib/aws/aws';
 import { createBooking } from '@/lib/db/queries/bookings';
 import { currentUser } from '@/lib/auth/hooks/get-current-user';
 
@@ -60,15 +59,17 @@ export const createBookingAction = async (
   const reservation = await createBooking(bookingData);
 
   if (reservation) {
-    for (const i in resources) {
-      const resource = await createResourceBooking({
-        bookingId: reservation?.id,
-        resourceId: resources[i].id,
-        quantity: resources[i].quantity,
-      });
+    if (resources) {
+      for (const i in resources) {
+        const resource = await createResourceBooking({
+          bookingId: reservation?.id,
+          resourceId: resources[i].id,
+          quantity: resources[i].quantity,
+        });
 
-      if (!resource) {
-        return { error: 'Ocorreu um erro, por favor tente mais tarde' };
+        if (!resource) {
+          return { error: 'Ocorreu um erro, por favor tente mais tarde' };
+        }
       }
     }
 

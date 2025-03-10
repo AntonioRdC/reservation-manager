@@ -1,3 +1,5 @@
+'use server';
+
 import { eq } from 'drizzle-orm';
 
 import { passwordResetTokens } from '@/lib/db/schema';

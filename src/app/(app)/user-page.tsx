@@ -12,8 +12,9 @@ import {
   LogOut,
   Layers3Icon,
   AlbumIcon,
-  UserCog,
+  Calendar,
   Building,
+  HardDrive,
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -62,13 +63,22 @@ export function UserPage({
             group: 'Admin',
             links: [
               {
-                href: '/admin',
-                icon: Building,
-                label: 'Gerenciar Espaços',
+                href: '/admin/resource',
+                icon: HardDrive,
+                label: 'Gerenciar Recursos',
+                subHref: '/admin/resource/create',
+                subLabel: 'Criar Recurso',
               },
               {
-                href: '/admin/manager-reservation',
-                icon: UserCog,
+                href: '/admin/space',
+                icon: Building,
+                label: 'Gerenciar Espaços',
+                subHref: '/admin/space/create',
+                subLabel: 'Criar Espaço',
+              },
+              {
+                href: '/admin/reservation',
+                icon: Calendar,
                 label: 'Gerenciar Reservas',
               },
             ],
@@ -158,20 +168,42 @@ export function UserPage({
                     {group.group}
                   </h3>
                   {group.links.map((item) => (
-                    <Link key={item.href} href={item.href} passHref>
-                      <Button
-                        variant={pathname === item.href ? 'secondary' : 'ghost'}
-                        className={`shadow-none my-1 w-full justify-start ${
-                          pathname === item.href
-                            ? 'bg-gray-100 text-rose-400'
-                            : ''
-                        }`}
-                        onClick={() => setIsSidebarOpen(false)}
-                      >
-                        <item.icon className="mr-2 h-4 w-4" />
-                        {item.label}
-                      </Button>
-                    </Link>
+                    <div key={item.href}>
+                      <Link href={item.href} passHref>
+                        <Button
+                          variant={
+                            pathname === item.href ? 'secondary' : 'ghost'
+                          }
+                          className={`shadow-none my-1 w-full justify-start ${
+                            pathname === item.href
+                              ? 'bg-gray-100 text-rose-400'
+                              : ''
+                          }`}
+                          onClick={() => setIsSidebarOpen(false)}
+                        >
+                          <item.icon className="mr-2 h-4 w-4" />
+                          {item.label}
+                        </Button>
+                      </Link>
+                      {item.subHref && (
+                        <Link key={item.subHref} href={item.subHref} passHref>
+                          <Button
+                            variant={
+                              pathname === item.subHref ? 'secondary' : 'ghost'
+                            }
+                            className={`shadow-none my-1 justify-start text-sm ${
+                              pathname === item.subHref
+                                ? 'bg-gray-100 text-rose-400'
+                                : ''
+                            }`}
+                            onClick={() => setIsSidebarOpen(false)}
+                          >
+                            <item.icon className="mr-2 h-4 w-4" />
+                            {item.subLabel}
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
                   ))}
                 </div>
               ))}
