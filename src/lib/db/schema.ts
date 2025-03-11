@@ -135,6 +135,35 @@ export const resourceBookings = pgTable('resource_booking', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
+export const conversations = pgTable('conversations', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  name: text('name'),
+  createdAt: timestamp('created_at').defaultNow(),
+  creatorId: uuid('creator_id').references(() => users.id),
+  bookingId: uuid('booking_id')
+    .notNull()
+    .references(() => bookings.id, { onDelete: 'cascade' })
+    .unique(),
+});
+
+export const conversationParticipants = pgTable('conversation_participants', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  conversationId: uuid('conversation_id')
+    .references(() => conversations.id)
+    .notNull(),
+  userId: uuid('user_id')
+    .references(() => users.id)
+    .notNull(),
+  joinedAt: timestamp('joined_at').defaultNow(),
+});
+
+export const messages = pgTable('messages', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  senderId: uuid('sender_id').references(() => users.id),
+  conversationId: uuid('conversation_id').references(() => conversations.id),
+});
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
@@ -203,6 +232,14 @@ export type Booking = typeof bookings.$inferSelect;
 export type NewBooking = typeof bookings.$inferInsert;
 export type ResourceBooking = typeof resourceBookings.$inferSelect;
 export type NewResourceBooking = typeof resourceBookings.$inferInsert;
+export type Conversation = typeof conversations.$inferSelect;
+export type NewConversation = typeof conversations.$inferInsert;
+export type ConversationParticipant =
+  typeof conversationParticipants.$inferSelect;
+export type NewConversationParticipant =
+  typeof conversationParticipants.$inferInsert;
+export type Message = typeof messages.$inferSelect;
+export type NewMessage = typeof messages.$inferInsert;
 
 export enum ActivityType {
   SIGN_UP = 'SIGN_UP',

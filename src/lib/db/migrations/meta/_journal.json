@@ -8,6 +8,13 @@
       "when": 1740506523946,
       "tag": "0000_nosy_gravity",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1741657761465,
+      "tag": "0001_cynical_starjammers",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,8 @@ import { createBooking } from '@/lib/db/queries/bookings';
 import { currentUser } from '@/lib/auth/hooks/get-current-user';
 
 import { ReservationFormSchema } from '@/app/(app)/(reservation)/reservation/schema';
+import { createConversation } from '@/lib/db/queries/conversation';
+import { createConversationParticipants } from '@/lib/db/queries/conversation-participants';
 
 export const createBookingAction = async (
   values: z.infer<typeof ReservationFormSchema>,
@@ -59,6 +61,11 @@ export const createBookingAction = async (
   const reservation = await createBooking(bookingData);
 
   if (reservation) {
+    const conversation = await createConversation(reservation.id);
+    const conversationParticipants = await createConversationParticipants(
+      conversation!.id,
+      user.id,
+    );
     if (resources) {
       for (const i in resources) {
         const resource = await createResourceBooking({

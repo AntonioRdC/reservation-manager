@@ -5,9 +5,9 @@ import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import { formatStartTime } from '@/app/(app)/utils';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { getUserBooking, UserBookings } from './action';
+import { Chat } from './chat';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',
@@ -57,7 +57,7 @@ const ReservationLayout = () => {
           </Badge>
         </CardHeader>
         <CardContent>
-          <div className="mt-2 flex flex-col lg:flex-row items-center gap-2">
+          <div className="my-2 flex flex-col lg:flex-row items-center gap-2">
             {reservation.space.image && (
               <img
                 src={reservation.space.image}
@@ -88,6 +88,10 @@ const ReservationLayout = () => {
               )}
             </div>
           </div>
+          <Chat
+            conversationId={reservation.conversation.id}
+            reservation={reservation}
+          />
         </CardContent>
       </Card>
     </section>
