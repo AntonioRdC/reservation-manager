@@ -25,7 +25,7 @@ import { createdSpacesAction } from './action';
 const fields = [
   {
     name: 'name',
-    type: 'name',
+    type: 'text',
     placeholder: 'Nome',
     label: 'Nome',
   },
@@ -41,6 +41,36 @@ const fields = [
     placeholder: 'Capacidade',
     label: 'Capacidade',
   },
+  {
+    name: 'address',
+    type: 'text',
+    placeholder: 'Endereço',
+    label: 'Endereço',
+  },
+  {
+    name: 'city',
+    type: 'text',
+    placeholder: 'Cidade',
+    label: 'Cidade',
+  },
+  {
+    name: 'state',
+    type: 'text',
+    placeholder: 'Estado',
+    label: 'Estado',
+  },
+  {
+    name: 'zipCode',
+    type: 'text',
+    placeholder: 'CEP',
+    label: 'CEP',
+  },
+  {
+    name: 'country',
+    type: 'text',
+    placeholder: 'País',
+    label: 'País (opcional)',
+  },
 ];
 
 export default function SpaceFormPage() {
@@ -55,6 +85,11 @@ export default function SpaceFormPage() {
       name: '',
       capacity: 0,
       description: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      country: 'Brasil',
       image: null,
     },
   });
@@ -73,7 +108,7 @@ export default function SpaceFormPage() {
         }
 
         setSuccess('Espaço criado com sucesso');
-        return;
+        form.reset();
       } catch (error) {
         setError('Ocorreu um erro no servidor, por favor, tente mais tarde');
       }
@@ -92,18 +127,25 @@ export default function SpaceFormPage() {
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-6"
             >
-              <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {fields.map((field) => (
                   <FormField
                     key={field.name}
                     control={form.control}
-                    name={field.name as 'name' | 'description' | 'capacity'}
+                    name={field.name as keyof z.infer<typeof SpacesFormSchema>}
                     render={({ field: formField }) => (
                       <FormItem>
                         <FormLabel>{field.label}</FormLabel>
                         <FormControl>
                           <Input
                             {...formField}
+                            value={
+                              formField.value instanceof File
+                                ? ''
+                                : formField.value === null
+                                  ? ''
+                                  : formField.value
+                            }
                             disabled={isPending}
                             placeholder={field.placeholder}
                             type={field.type}
@@ -118,7 +160,7 @@ export default function SpaceFormPage() {
                   control={form.control}
                   name="image"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="md:col-span-2">
                       <FormLabel>Imagem</FormLabel>
                       <FormControl>
                         <ImageUploader

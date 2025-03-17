@@ -15,6 +15,13 @@
       "when": 1741657761465,
       "tag": "0001_cynical_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742239754326,
+      "tag": "0002_vengeful_mother_askani",
+      "breakpoints": true
     }
   ]
 }

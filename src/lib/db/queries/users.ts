@@ -119,3 +119,11 @@ export const deleteUserById = async (id: string) => {
     return null;
   }
 };
+export const getAdmins = async () => {
+  try {
+    const admins = await db.select().from(users).where(eq(users.role, 'ADMIN'));
+    return admins;
+  } catch {
+    return null;
+  }
+};

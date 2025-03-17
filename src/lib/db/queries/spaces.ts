@@ -24,20 +24,46 @@ export const getSpaceById = async (id: string) => {
   }
 };
 
-export const createSpace = async (
-  name: string,
-  capacity: number,
-  description: string,
-  image: string | null,
-) => {
+export const createSpace = async ({
+  name,
+  capacity,
+  description,
+  image,
+  address,
+  city,
+  state,
+  zipCode,
+  country = 'Brasil',
+}: {
+  name: string;
+  capacity: number;
+  description: string;
+  image: string | null;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  country?: string;
+}) => {
   try {
     const [newSpace] = await db
       .insert(spaces)
-      .values({ name, capacity, description, image })
+      .values({
+        name,
+        capacity,
+        description,
+        image,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+      })
       .returning();
 
     return newSpace;
-  } catch {
+  } catch (error) {
+    console.error('Error creating space:', error);
     return null;
   }
 };

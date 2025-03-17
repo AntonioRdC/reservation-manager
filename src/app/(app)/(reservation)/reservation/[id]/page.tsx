@@ -10,6 +10,7 @@ import { Chat } from './chat';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { getStripe } from '@/lib/stripe/stripe-client';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',
@@ -28,6 +29,7 @@ const statusMap: Record<string, { label: string; colorClass: string }> = {
 export default function ReservationPage() {
   const { id } = useParams();
   const [reservation, setReservation] = useState<UserBookings | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -36,6 +38,39 @@ export default function ReservationPage() {
         .catch((error) => console.error('Error fetching reservation:', error));
     }
   }, [id]);
+
+  const handlePayment = async () => {
+    if (!reservation) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/payments/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bookingId: reservation.id,
+          amount: 1,
+          description: `Reserva de ${reservation.space.name}`,
+        }),
+      });
+
+      const { sessionId, url } = await response.json();
+
+      if (url) {
+        window.location.href = url;
+      } else {
+        const stripe = await getStripe();
+        await stripe.redirectToCheckout({ sessionId });
+      }
+    } catch (error) {
+      console.error('Error redirecting to checkout:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!reservation) {
     return (
@@ -96,9 +131,7 @@ export default function ReservationPage() {
             </div>
           </div>
           <div className="flex justify-end mb-2">
-            <Link href="/payment">
-              <Button>Ir para pagamento</Button>
-            </Link>
+            <Button onClick={handlePayment}>Ir para pagamento</Button>
           </div>
           <Chat conversationId={reservation.conversation.id} />
         </CardContent>

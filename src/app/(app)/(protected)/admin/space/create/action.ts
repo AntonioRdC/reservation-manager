@@ -6,7 +6,17 @@ import { z } from 'zod';
 export const createdSpacesAction = async (
   values: z.infer<typeof SpacesFormSchema>,
 ) => {
-  const { name, capacity, description, image } = values;
+  const {
+    name,
+    capacity,
+    description,
+    image,
+    address,
+    city,
+    state,
+    zipCode,
+    country,
+  } = values;
 
   let imageUrl = null;
 
@@ -38,7 +48,17 @@ export const createdSpacesAction = async (
     }
   }
 
-  const space = await createSpace(name, capacity, description, imageUrl);
+  const space = await createSpace({
+    name,
+    capacity,
+    description,
+    image: imageUrl,
+    address,
+    city,
+    state,
+    zipCode,
+    country: country || 'Brasil',
+  });
 
   return space;
 };

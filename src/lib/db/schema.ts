@@ -96,6 +96,11 @@ export const spaces = pgTable('space', {
   description: text('description'),
   image: text('image'),
   capacity: integer('capacity').notNull(),
+  address: varchar('address', { length: 255 }),
+  city: varchar('city', { length: 100 }),
+  state: varchar('state', { length: 50 }),
+  zipCode: varchar('zip_code', { length: 20 }),
+  country: varchar('country', { length: 100 }).default('Brasil'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
