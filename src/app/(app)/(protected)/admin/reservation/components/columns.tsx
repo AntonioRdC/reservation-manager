@@ -15,6 +15,7 @@ const categoryTranslations: Record<string, string> = {
 
 const statusTranslations: Record<string, string> = {
   REQUESTED: 'Em análise',
+  PAYMENT: 'Aguardando pagamento',
   CONFIRMED: 'Aprovado',
   CANCELLED: 'Cancelado',
 };

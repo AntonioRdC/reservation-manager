@@ -8,7 +8,7 @@ export const confirmedBooking = async (
   id: string,
 ) => {
   if (user?.role === 'ADMIN') {
-    return await updateStatusBooking(id, 'CONFIRMED');
+    return await updateStatusBooking(id, 'PAYMENT');
   }
 };
 

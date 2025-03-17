@@ -8,6 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import { getUserBooking, UserBookings } from './action';
 import { Chat } from './chat';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',
@@ -18,6 +20,7 @@ const categoryMap: Record<string, string> = {
 
 const statusMap: Record<string, { label: string; colorClass: string }> = {
   REQUESTED: { label: 'Solicitado', colorClass: 'bg-blue-500' },
+  PAYMENT: { label: 'Aguardando pagamento', colorClass: 'bg-yellow-500' },
   CONFIRMED: { label: 'Confirmado', colorClass: 'bg-green-500' },
   CANCELLED: { label: 'Cancelado', colorClass: 'bg-red-500' },
 };
@@ -91,6 +94,11 @@ export default function ReservationPage() {
                 </>
               )}
             </div>
+          </div>
+          <div className="flex justify-end mb-2">
+            <Link href="/payment">
+              <Button>Ir para pagamento</Button>
+            </Link>
           </div>
           <Chat conversationId={reservation.conversation.id} />
         </CardContent>

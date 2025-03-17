@@ -9,7 +9,6 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { formatStartTime } from '../../utils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,7 @@ const categoryMap: Record<string, string> = {
 
 const statusMap: Record<string, { label: string; colorClass: string }> = {
   REQUESTED: { label: 'Solicitado', colorClass: 'bg-blue-500' },
+  PAYMENT: { label: 'Aguardando pagamento', colorClass: 'bg-yellow-500' },
   CONFIRMED: { label: 'Confirmado', colorClass: 'bg-green-500' },
   CANCELLED: { label: 'Cancelado', colorClass: 'bg-red-500' },
 };

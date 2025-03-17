@@ -31,6 +31,7 @@
     "@radix-ui/react-separator": "^1.1.1",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-tooltip": "^1.1.8",
+    "@stripe/stripe-js": "^6.0.0",
     "@tailwindcss/postcss": "^4.0.6",
     "@tanstack/react-table": "^8.20.6",
     "@types/bcryptjs": "^2.4.6",

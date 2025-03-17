@@ -162,7 +162,7 @@ export function DataTableReservation({ data: initialData }: DataTableProps) {
                                   handleConfirmed(row.original.booking)
                                 }
                               >
-                                Aprovar agendamento
+                                Mandar agendamento para pagamento
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 onClick={() =>
@@ -173,7 +173,8 @@ export function DataTableReservation({ data: initialData }: DataTableProps) {
                               </DropdownMenuItem>
                             </>
                           )}
-                          {row.original.booking.status === 'CONFIRMED' && (
+                          {(row.original.booking.status === 'CONFIRMED' ||
+                            row.original.booking.status === 'PAYMENT') && (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
