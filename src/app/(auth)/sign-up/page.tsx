@@ -121,11 +121,6 @@ export default function SignUpPage() {
                 <FormError message={error} />
                 <FormSuccess message={success} />
                 <div className="flex flex-col md:flex-row gap-2">
-                  <Link href="/sign-in" className="flex-1">
-                    <Button variant="outline" className="w-full">
-                      Fazer login
-                    </Button>
-                  </Link>
                   <Button
                     disabled={isPending}
                     type="submit"
@@ -133,6 +128,11 @@ export default function SignUpPage() {
                   >
                     Criar conta
                   </Button>
+                  <Link href="/sign-in" className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      Fazer login
+                    </Button>
+                  </Link>
                 </div>
               </form>
             </Form>

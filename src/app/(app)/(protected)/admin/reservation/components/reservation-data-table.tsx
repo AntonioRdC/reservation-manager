@@ -42,6 +42,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import Link from 'next/link';
 
 interface DataTableProps {
   data: BookingData[];
@@ -146,7 +147,13 @@ export function DataTableReservation({ data: initialData }: DataTableProps) {
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Ações</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href={`/reservation/${row.original.booking.id}`}
+                            >
+                              Ver detalhes
+                            </Link>
+                          </DropdownMenuItem>
                           {row.original.booking.status === 'REQUESTED' && (
                             <>
                               <DropdownMenuSeparator />
