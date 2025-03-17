@@ -38,11 +38,7 @@ export const createdSpacesAction = async (
     }
   }
 
-  console.log(name, capacity, description, imageUrl, image);
-
   const space = await createSpace(name, capacity, description, imageUrl);
-
-  console.log(space);
 
   return space;
 };

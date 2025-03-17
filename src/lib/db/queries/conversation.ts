@@ -12,7 +12,6 @@ export const getConversationByReservationId = async (reservationId: string) => {
       .where(eq(conversations.bookingId, reservationId));
     return conversation;
   } catch (error) {
-    console.error('Error fetching conversation:', error);
     return null;
   }
 };
@@ -25,7 +24,6 @@ export const createConversation = async (reservationId: string) => {
       .returning();
     return conversation;
   } catch (error) {
-    console.error('Error creating conversation:', error);
     return null;
   }
 };

@@ -4,23 +4,25 @@ import { getBookingById } from '@/lib/db/queries/bookings';
 import { getResourceBookingByUserId } from '@/lib/db/queries/resource-booking';
 import { getAllResources } from '@/lib/db/queries/resources';
 import { getAllSpaces } from '@/lib/db/queries/spaces';
-import { Booking, Conversation, Resource, Space } from '@/lib/db/schema';
+import { Booking, Conversation, Resource, Space, User } from '@/lib/db/schema';
 import { getConversationByReservationId } from '@/lib/db/queries/conversation';
+import { getUserById } from '@/lib/db/queries/users';
 
 export interface UserBookings extends Booking {
   space: Space;
   resources?: Resource[];
   conversation: Conversation;
+  user: User;
 }
 
 export async function getUserBooking(
   bookingId: string,
 ): Promise<UserBookings | null> {
   const booking = await getBookingById(bookingId);
+  const user = await getUserById(booking!.userId);
   const conversation = await getConversationByReservationId(bookingId);
   const allSpaces = await getAllSpaces();
-  console.log(booking, conversation, allSpaces);
-  if (!booking || !allSpaces || !conversation) {
+  if (!booking || !allSpaces || !conversation || !user) {
     return null;
   }
 
@@ -32,6 +34,7 @@ export async function getUserBooking(
       ...booking,
       space,
       conversation,
+      user,
     };
   }
 
@@ -43,6 +46,7 @@ export async function getUserBooking(
       ...booking,
       space,
       conversation,
+      user,
     };
   }
 
@@ -61,5 +65,6 @@ export async function getUserBooking(
     space,
     resources,
     conversation,
+    user,
   };
 }

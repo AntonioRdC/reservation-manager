@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 import { formatStartTime } from '@/app/(app)/utils';
 import { Badge } from '@/components/ui/badge';
 import { getUserBooking, UserBookings } from './action';
 import { Chat } from './chat';
+import { Loader2 } from 'lucide-react';
 
 const categoryMap: Record<string, string> = {
   PRESENTIAL_COURSE: 'Curso Presencial',
@@ -22,8 +22,7 @@ const statusMap: Record<string, { label: string; colorClass: string }> = {
   CANCELLED: { label: 'Cancelado', colorClass: 'bg-red-500' },
 };
 
-const ReservationLayout = () => {
-  const user = useCurrentUser();
+export default function ReservationPage() {
   const { id } = useParams();
   const [reservation, setReservation] = useState<UserBookings | null>(null);
 
@@ -36,13 +35,18 @@ const ReservationLayout = () => {
   }, [id]);
 
   if (!reservation) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="animate-spin" size={32} />
+      </div>
+    );
   }
 
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium bold text-rose-500 mb-6">
-        Reserva - {user?.name} - {formatStartTime(reservation.startTime)}
+        Reserva - {reservation.user.name} -{' '}
+        {formatStartTime(reservation.startTime)}
       </h1>
 
       <Card key={reservation.id}>
@@ -88,14 +92,9 @@ const ReservationLayout = () => {
               )}
             </div>
           </div>
-          <Chat
-            conversationId={reservation.conversation.id}
-            reservation={reservation}
-          />
+          <Chat conversationId={reservation.conversation.id} />
         </CardContent>
       </Card>
     </section>
   );
-};
-
-export default ReservationLayout;
+}
