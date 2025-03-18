@@ -200,8 +200,49 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
 
         <Separator />
 
-        {/* Resto do formulário... */}
-        {/* ... */}
+        {/* Data e horário */}
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Horário do agendamento</FormLabel>
+              <FormControl>
+                <DateTimePicker
+                  selectedDate={field.value}
+                  onSelectDate={field.onChange}
+                  selectedStartTime={form.getValues('startTime')}
+                  onSelectStartTime={(value) =>
+                    form.setValue('startTime', value)
+                  }
+                  selectedEndTime={form.getValues('endTime')}
+                  onSelectEndTime={(value) => form.setValue('endTime', value)}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Separator />
+
+        {/* Recursos */}
+        <FormField
+          control={form.control}
+          name="resources"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Recursos</FormLabel>
+              <FormControl>
+                <ResourceSelector
+                  resources={resources}
+                  onResourcesChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormError message={error} />
         <FormSuccess message={success} />
