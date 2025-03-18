@@ -101,7 +101,6 @@ export async function sendCalendarInvite(
 
     return true;
   } catch (error) {
-    console.error('Erro ao enviar email com convite de calendário:', error);
     return false;
   }
 }

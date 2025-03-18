@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { getUserBooking, UserBookings } from './action';
 import { Chat } from './chat';
 import { Loader2 } from 'lucide-react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { getStripe } from '@/lib/stripe/stripe-client';
 
@@ -130,9 +129,11 @@ export default function ReservationPage() {
               )}
             </div>
           </div>
-          <div className="flex justify-end mb-2">
-            <Button onClick={handlePayment}>Ir para pagamento</Button>
-          </div>
+          {reservation.status === 'PAYMENT' && (
+            <div className="flex justify-end mb-2">
+              <Button onClick={handlePayment}>Ir para pagamento</Button>
+            </div>
+          )}
           <Chat conversationId={reservation.conversation.id} />
         </CardContent>
       </Card>

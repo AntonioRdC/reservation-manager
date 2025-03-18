@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
 
             const booking = await getBookingById(bookingId);
             const space = await getSpaceById(booking!.spaceId);
+            console.log(booking, space);
             if (booking && space) {
               const user = await getUserById(booking.userId);
               const admins = await getAdmins();
@@ -66,6 +67,7 @@ export async function POST(req: NextRequest) {
                 .map((admin) => admin.email)
                 .filter(Boolean) as string[];
 
+              console.log(user, admins, adminEmails);
               if (user?.email) {
                 await sendCalendarInvite(
                   booking,

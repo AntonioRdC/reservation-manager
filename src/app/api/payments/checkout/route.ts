@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import stripe from '@/lib/stripe/stripe-server';
-import { updateStatusBooking } from '@/lib/db/queries/bookings';
+import { getBookingById, updateStatusBooking } from '@/lib/db/queries/bookings';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,6 +14,19 @@ export async function POST(req: NextRequest) {
     }
 
     const amountInCents = Math.round(amount * 100);
+
+    const booking = await getBookingById(bookingId);
+
+    if (!booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
+    }
+
+    if (booking.status !== 'PAYMENT') {
+      return NextResponse.json(
+        { error: 'Booking is not in payment status' },
+        { status: 400 },
+      );
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
