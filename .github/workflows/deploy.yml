@@ -31,6 +31,8 @@ jobs:
             cp .env reservation-manager/
             cd reservation-manager
             pnpm i
+            pnpm db:generate
+            pnpm db:migrate
             pnpm build
             pm2 delete reservationManager || true
             pm2 start pnpm --name reservationManager -- start
