@@ -130,7 +130,6 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
           )}
         />
 
-        {/* Mostrar detalhes do espaço selecionado */}
         {selectedSpace && (
           <Card className="mt-4 overflow-hidden">
             <div className="relative w-full h-48">
@@ -161,7 +160,6 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
                 </Badge>
               </div>
 
-              {/* Mostrar endereço se disponível */}
               {selectedSpace.address && (
                 <div className="mt-4 text-sm">
                   <p className="font-medium">Endereço:</p>

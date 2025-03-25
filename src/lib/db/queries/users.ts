@@ -86,19 +86,37 @@ export const updateAdminUser = async (id: string) => {
 
 export const updateAccountUser = async (
   id: string,
-  name: string,
+  name: string | undefined,
   email: string | undefined,
-  emailVerified: null | undefined,
+  emailVerified: Date | null | undefined,
+  telefone?: string | undefined,
+  address?: string | undefined,
+  city?: string | undefined,
+  state?: string | undefined,
+  zipCode?: string | undefined,
+  country?: string | undefined,
 ) => {
   try {
-    const [updatedUser] = await db
+    const [user] = await db
       .update(users)
-      .set({ name, email, emailVerified, updatedAt: new Date() })
+      .set({
+        name,
+        email,
+        emailVerified,
+        telefone,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, id))
       .returning();
 
-    return updatedUser;
-  } catch {
+    return user;
+  } catch (error) {
+    console.error('Error updating user:', error);
     return null;
   }
 };

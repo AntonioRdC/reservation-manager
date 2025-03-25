@@ -3,9 +3,16 @@ import { redirect } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AccountForm } from '@/app/(app)/account/account-form';
 import { currentUser } from '@/lib/auth/hooks/get-current-user';
+import { getUserById } from '@/lib/db/queries/users';
 
 export default async function AccountPage() {
-  const user = await currentUser();
+  const sessionUser = await currentUser();
+
+  if (!sessionUser?.id) {
+    redirect('/');
+  }
+
+  const user = await getUserById(sessionUser.id);
 
   if (!user) {
     redirect('/');
@@ -22,7 +29,7 @@ export default async function AccountPage() {
           <CardTitle>Informações da conta</CardTitle>
         </CardHeader>
         <CardContent>
-          <AccountForm user={user} />
+          <AccountForm user={user} sessionUser={sessionUser} />
         </CardContent>
       </Card>
     </section>

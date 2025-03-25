@@ -22,6 +22,13 @@
       "when": 1742239754326,
       "tag": "0002_vengeful_mother_askani",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742517371534,
+      "tag": "0003_curved_living_tribunal",
+      "breakpoints": true
     }
   ]
 }

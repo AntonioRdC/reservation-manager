@@ -32,7 +32,8 @@ export const updateAccountAction = async (
     return { error: 'Campos Inválidos' };
   }
 
-  let { name, email } = validatedFields.data;
+  let { name, email, telefone, address, city, state, zipCode, country } =
+    validatedFields.data;
 
   const user = await currentUser();
 
@@ -54,9 +55,23 @@ export const updateAccountAction = async (
     const verificationToken = await generateVerificationToken(values.email);
     await Promise.all([
       logActivity(user.id!, ActivityType.UPDATE_ACCOUNT),
-      updateAccountUser(user.id!, name, email, null),
+      updateAccountUser(
+        user.id!,
+        name,
+        email,
+        null,
+        telefone,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+      ),
       unstable_update({
-        user: { name, email },
+        user: {
+          name,
+          email,
+        },
       }),
       sendVerificationEmail(
         verificationToken.identifier,
@@ -65,20 +80,55 @@ export const updateAccountAction = async (
     ]);
 
     return {
-      data: { name, email },
+      data: {
+        name,
+        email,
+        telefone,
+        address,
+        city,
+        state,
+        zipCode,
+        country,
+      },
       success: 'Conta atualizada com sucesso, por favor, verifique seu email',
     };
   }
 
   await Promise.all([
     logActivity(user.id!, ActivityType.UPDATE_ACCOUNT),
-    updateAccountUser(user.id!, name, email, undefined),
+    updateAccountUser(
+      user.id!,
+      name,
+      email,
+      undefined,
+      telefone,
+      address,
+      city,
+      state,
+      zipCode,
+      country,
+    ),
     unstable_update({
-      user: { name, email },
+      user: {
+        name,
+        email,
+      },
     }),
   ]);
 
-  return { data: { name, email }, success: 'Conta atualizada com sucesso' };
+  return {
+    data: {
+      name,
+      email,
+      telefone,
+      address,
+      city,
+      state,
+      zipCode,
+      country,
+    },
+    success: 'Conta atualizada com sucesso',
+  };
 };
 
 export const updatePasswordAction = async (
