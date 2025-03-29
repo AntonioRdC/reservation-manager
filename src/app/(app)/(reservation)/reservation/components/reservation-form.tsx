@@ -1,7 +1,7 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Resource, Space } from '@/lib/db/schema';
+import { Booking, Resource, Space } from '@/lib/db/schema';
 import { useState, useTransition, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -41,15 +41,19 @@ import {
 interface BookingFormProps {
   spaces: Space[];
   resources: Resource[];
+  reservations: Booking[];
 }
 
-export function ReservationForm({ spaces, resources }: BookingFormProps) {
+export function ReservationForm({
+  spaces,
+  resources,
+  reservations,
+}: BookingFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
   const [isPending, startTransition] = useTransition();
 
-  // Estado para armazenar o espaço selecionado
   const [selectedSpace, setSelectedSpace] = useState<Space | null>(null);
 
   const form = useForm<z.infer<typeof ReservationFormSchema>>({
@@ -64,7 +68,6 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
     },
   });
 
-  // Observe mudanças no campo "space" do formulário
   useEffect(() => {
     const spaceId = form.watch('space');
     if (spaceId) {
@@ -83,6 +86,8 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
 
     startTransition(async () => {
       try {
+        console.log('values:', values);
+
         const data = await createBookingAction(values);
 
         if (data.success) {
@@ -131,122 +136,126 @@ export function ReservationForm({ spaces, resources }: BookingFormProps) {
         />
 
         {selectedSpace && (
-          <Card className="mt-4 overflow-hidden">
-            <div className="relative w-full h-48">
-              {selectedSpace.image ? (
-                <Image
-                  src={selectedSpace.image}
-                  alt={selectedSpace.name}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  className="rounded-t-md"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                  <p className="text-gray-500">Sem imagem disponível</p>
-                </div>
-              )}
-            </div>
-            <CardContent className="p-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="text-lg font-bold">{selectedSpace.name}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {selectedSpace.description || 'Sem descrição'}
-                  </p>
-                </div>
-                <Badge variant="outline" className="ml-2">
-                  Capacidade: {selectedSpace.capacity}
-                </Badge>
+          <>
+            <Card className="mt-4 overflow-hidden">
+              <div className="relative w-full h-48">
+                {selectedSpace.image ? (
+                  <Image
+                    src={selectedSpace.image}
+                    alt={selectedSpace.name}
+                    fill
+                    style={{ objectFit: 'cover' }}
+                    className="rounded-t-md"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <p className="text-gray-500">Sem imagem disponível</p>
+                  </div>
+                )}
               </div>
-
-              {selectedSpace.address && (
-                <div className="mt-4 text-sm">
-                  <p className="font-medium">Endereço:</p>
-                  <p>{selectedSpace.address}</p>
-                  <p>
-                    {selectedSpace.city}, {selectedSpace.state} -{' '}
-                    {selectedSpace.zipCode}
-                  </p>
-                  <p>{selectedSpace.country}</p>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-lg font-bold">{selectedSpace.name}</h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      {selectedSpace.description || 'Sem descrição'}
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="ml-2">
+                    Capacidade: {selectedSpace.capacity}
+                  </Badge>
                 </div>
+
+                {selectedSpace.address && (
+                  <div className="mt-4 text-sm">
+                    <p className="font-medium">Endereço:</p>
+                    <p>{selectedSpace.address}</p>
+                    <p>
+                      {selectedSpace.city}, {selectedSpace.state} -{' '}
+                      {selectedSpace.zipCode}
+                    </p>
+                    <p>{selectedSpace.country}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Separator />
+
+            {/* Categoria */}
+            <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Categoria</FormLabel>
+                  <FormControl>
+                    <CategorySelector
+                      categories={categoryType}
+                      selectedCategory={field.value}
+                      onSelectedCategory={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
-            </CardContent>
-          </Card>
+            />
+
+            <Separator />
+
+            {/* Data e horário */}
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Horário do agendamento</FormLabel>
+                  <FormControl>
+                    <DateTimePicker
+                      selectedDate={field.value}
+                      onSelectDate={field.onChange}
+                      onSelectStartTime={(value) =>
+                        form.setValue('startTime', value)
+                      }
+                      onSelectEndTime={(value) =>
+                        form.setValue('endTime', value)
+                      }
+                      reservations={reservations}
+                      selectedSpace={selectedSpace}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Separator />
+
+            {/* Recursos */}
+            <FormField
+              control={form.control}
+              name="resources"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Recursos</FormLabel>
+                  <FormControl>
+                    <ResourceSelector
+                      resources={resources}
+                      onResourcesChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormError message={error} />
+            <FormSuccess message={success} />
+            <Button disabled={isPending} type="submit" className="w-full">
+              Fazer Agendamento
+            </Button>
+          </>
         )}
-
-        <Separator />
-
-        {/* Categoria */}
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Categoria</FormLabel>
-              <FormControl>
-                <CategorySelector
-                  categories={categoryType}
-                  selectedCategory={field.value}
-                  onSelectedCategory={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Separator />
-
-        {/* Data e horário */}
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Horário do agendamento</FormLabel>
-              <FormControl>
-                <DateTimePicker
-                  selectedDate={field.value}
-                  onSelectDate={field.onChange}
-                  selectedStartTime={form.getValues('startTime')}
-                  onSelectStartTime={(value) =>
-                    form.setValue('startTime', value)
-                  }
-                  selectedEndTime={form.getValues('endTime')}
-                  onSelectEndTime={(value) => form.setValue('endTime', value)}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <Separator />
-
-        {/* Recursos */}
-        <FormField
-          control={form.control}
-          name="resources"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Recursos</FormLabel>
-              <FormControl>
-                <ResourceSelector
-                  resources={resources}
-                  onResourcesChange={field.onChange}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormError message={error} />
-        <FormSuccess message={success} />
-        <Button disabled={isPending} type="submit" className="w-full">
-          Fazer Agendamento
-        </Button>
       </form>
     </Form>
   );

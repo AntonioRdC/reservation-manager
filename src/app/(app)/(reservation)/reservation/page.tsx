@@ -4,12 +4,14 @@ import { ReservationForm } from '@/app/(app)/(reservation)/reservation/component
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { getAllResources } from '@/lib/db/queries/resources';
 import { getAllSpaces } from '@/lib/db/queries/spaces';
+import { getAllBookings } from '@/lib/db/queries/bookings';
 
 export default async function BookingPage() {
-  const spaces = await getAllSpaces();
   const resources = await getAllResources();
+  const spaces = await getAllSpaces();
+  const reservations = await getAllBookings();
 
-  if (!spaces || !resources) {
+  if (!spaces || !resources || !reservations) {
     return (
       <div className="flex flex-col items-center justify-center text-center py-12">
         <AlertCircle className="h-12 w-12 text-rose-500 mb-4" />
@@ -32,7 +34,11 @@ export default async function BookingPage() {
       <Card>
         <CardHeader>Escolha o espaço, o horário...</CardHeader>
         <CardContent>
-          <ReservationForm spaces={spaces} resources={resources} />
+          <ReservationForm
+            spaces={spaces}
+            resources={resources}
+            reservations={reservations}
+          />
         </CardContent>
       </Card>
     </section>
