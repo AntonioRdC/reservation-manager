@@ -72,6 +72,7 @@ export const createBooking = async (payload: NewBooking) => {
 
     return newBooking;
   } catch (error) {
+    console.error('Error creating booking:', error);
     return null;
   }
 };

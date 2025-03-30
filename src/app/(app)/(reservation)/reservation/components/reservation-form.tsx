@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import Image from 'next/image';
+import { format, parseISO, setHours, setMinutes } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 import { createBookingAction } from '@/app/(app)/(reservation)/reservation/action';
 
@@ -61,22 +63,12 @@ export function ReservationForm({
     defaultValues: {
       space: '',
       category: 'CONSULTANCY',
-      date: new Date(),
-      startTime: '06:00 AM',
-      endTime: '10:00 PM',
+      date: undefined,
+      startTime: '08:00',
+      endTime: '22:00',
       resources: [],
     },
   });
-
-  useEffect(() => {
-    const spaceId = form.watch('space');
-    if (spaceId) {
-      const space = spaces.find((s) => s.id === spaceId);
-      setSelectedSpace(space || null);
-    } else {
-      setSelectedSpace(null);
-    }
-  }, [form.watch('space'), spaces]);
 
   const handleSubmit = async (
     values: z.infer<typeof ReservationFormSchema>,
@@ -86,8 +78,6 @@ export function ReservationForm({
 
     startTransition(async () => {
       try {
-        console.log('values:', values);
-
         const data = await createBookingAction(values);
 
         if (data.success) {
@@ -98,6 +88,7 @@ export function ReservationForm({
           setError(data.error);
         }
       } catch (error) {
+        console.error('Error submitting form:', error);
         setError('Ocorreu um erro no servidor, por favor, tente novamente');
       }
     });
@@ -115,7 +106,11 @@ export function ReservationForm({
               <FormLabel>Tipos de espaço</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={field.onChange}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    const space = spaces.find((s) => s.id === value);
+                    setSelectedSpace(space || null);
+                  }}
                   defaultValue={field.value}
                 >
                   <SelectTrigger>
@@ -214,9 +209,11 @@ export function ReservationForm({
                     <DateTimePicker
                       selectedDate={field.value}
                       onSelectDate={field.onChange}
+                      selectedStartTime={form.getValues('startTime')}
                       onSelectStartTime={(value) =>
                         form.setValue('startTime', value)
                       }
+                      selectedEndTime={form.getValues('endTime')}
                       onSelectEndTime={(value) =>
                         form.setValue('endTime', value)
                       }

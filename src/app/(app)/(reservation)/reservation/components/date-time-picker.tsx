@@ -20,12 +20,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Booking, Space } from '@/lib/db/schema';
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 
 interface DateTimePickerProps {
   selectedDate: Date | undefined;
   onSelectDate: (date: Date | undefined) => void;
+  selectedStartTime: string;
   onSelectStartTime: (startTime: string) => void;
+  selectedEndTime: string;
   onSelectEndTime: (endTime: string) => void;
   reservations: Booking[];
   selectedSpace: Space | null;
@@ -34,7 +36,9 @@ interface DateTimePickerProps {
 export function DateTimePicker({
   selectedDate,
   onSelectDate,
+  selectedStartTime,
   onSelectStartTime,
+  selectedEndTime,
   onSelectEndTime,
   reservations,
   selectedSpace,
@@ -54,9 +58,79 @@ export function DateTimePicker({
         ['CONFIRMED', 'PAYMENT', 'REQUESTED'].includes(reservation.status),
     );
 
-    console.log('filteredReservations:', filtered);
     return filtered;
   }, [selectedSpace, reservations]);
+
+  const fullyBookedDates = useMemo(() => {
+    if (!filteredReservations.length) return [];
+
+    const reservationsByDate = new Map<string, Booking[]>();
+
+    filteredReservations.forEach((reservation) => {
+      const startDate = new Date(reservation.startTime);
+      const dateKey = format(startDate, 'yyyy-MM-dd');
+
+      if (!reservationsByDate.has(dateKey)) {
+        reservationsByDate.set(dateKey, []);
+      }
+
+      reservationsByDate.get(dateKey)!.push(reservation);
+    });
+
+    const fullyBooked: Date[] = [];
+
+    reservationsByDate.forEach((reservations, dateStr) => {
+      const ranges = reservations.map((reservation) => {
+        const start = new Date(reservation.startTime);
+        const end = new Date(reservation.endTime);
+        return {
+          start: start.getHours() * 60 + start.getMinutes(),
+          end: end.getHours() * 60 + end.getMinutes(),
+        };
+      });
+
+      const businessStart = 8 * 60;
+      const businessEnd = 22 * 60;
+
+      const timeline = Array(24 * 60).fill(false);
+
+      ranges.forEach((range) => {
+        for (let minute = range.start; minute < range.end; minute++) {
+          timeline[minute] = true;
+        }
+      });
+
+      let allMinutesBooked = true;
+      for (let minute = businessStart; minute < businessEnd; minute++) {
+        if (!timeline[minute]) {
+          allMinutesBooked = false;
+          break;
+        }
+      }
+
+      if (allMinutesBooked) {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const dateObject = new Date(year, month - 1, day);
+        fullyBooked.push(dateObject);
+      }
+    });
+
+    return fullyBooked;
+  }, [filteredReservations]);
+
+  useEffect(() => {
+    if (!selectedDate) return;
+
+    const isDisabled =
+      selectedDate <= new Date() ||
+      fullyBookedDates.some((bookedDate) =>
+        isSameDay(selectedDate, bookedDate),
+      );
+
+    if (isDisabled) {
+      onSelectDate(undefined);
+    }
+  }, [selectedDate, fullyBookedDates, onSelectDate]);
 
   const reservationsForSelectedDate = useMemo(() => {
     if (!selectedDate || !filteredReservations.length) return [];
@@ -67,7 +141,6 @@ export function DateTimePicker({
         isSameDay(new Date(reservation.startTime), selectedDate),
     );
 
-    console.log('reservationsForSelectedDate:', filtered);
     return filtered;
   }, [selectedDate, filteredReservations]);
 
@@ -77,19 +150,9 @@ export function DateTimePicker({
     }
 
     const timeToHours = (timeStr: string) => {
-      const [timePart, meridiem] = timeStr.split(' ');
-      let [hours, minutes] = timePart.split(':').map(Number);
-
-      if (meridiem === 'PM' && hours !== 12) {
-        hours += 12;
-      } else if (meridiem === 'AM' && hours === 12) {
-        hours = 0;
-      }
-
+      const [hours, minutes] = timeStr.split(':').map(Number);
       return hours + minutes / 60;
     };
-
-    console.log('timeOptions:', timeOptions);
 
     const reservedTimeRanges = reservationsForSelectedDate.map(
       (reservation) => {
@@ -100,18 +163,14 @@ export function DateTimePicker({
         return { start: startHours, end: endHours };
       },
     );
-    console.log('reservedTimeRanges:', reservedTimeRanges);
 
     const filtered = timeOptions.filter((time) => {
       const timeHours = timeToHours(time);
-      console.log('time:', time);
-      console.log('timeHours:', timeHours);
 
       return !reservedTimeRanges.some(
         (range) => timeHours >= range.start && timeHours <= range.end,
       );
     });
-    console.log('filtered:', filtered);
 
     return filtered;
   }, [selectedDate, reservationsForSelectedDate]);
@@ -135,15 +194,31 @@ export function DateTimePicker({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={selectedDate}
-            onSelect={onSelectDate}
+            onSelect={(date) => {
+              if (!date) {
+                onSelectDate(undefined);
+                return;
+              }
+
+              const isDisabled =
+                date <= new Date() ||
+                fullyBookedDates.some((bookedDate) =>
+                  isSameDay(date, bookedDate),
+                );
+
+              if (!isDisabled) {
+                onSelectDate(date);
+              }
+            }}
             disabled={(date) =>
-              date < new Date(new Date().setHours(0, 0, 0, 0))
+              date <= new Date() ||
+              fullyBookedDates.some((bookedDate) => isSameDay(date, bookedDate))
             }
             initialFocus
           />
         </PopoverContent>
       </Popover>
+
       {/* Hora de início */}
       <Select
         onValueChange={onSelectStartTime}
