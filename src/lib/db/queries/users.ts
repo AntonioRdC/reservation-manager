@@ -88,6 +88,7 @@ export const updateAccountUser = async (
   id: string,
   name: string | undefined,
   email: string | undefined,
+  imageUrl: string | null | undefined,
   emailVerified: Date | null | undefined,
   telefone?: string | undefined,
   address?: string | undefined,
@@ -102,6 +103,7 @@ export const updateAccountUser = async (
       .set({
         name,
         email,
+        image: imageUrl,
         emailVerified,
         telefone,
         address,

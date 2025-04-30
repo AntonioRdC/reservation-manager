@@ -26,7 +26,7 @@ export default function RootLayout({
       className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
     >
       <SessionProvider>
-        <body className="min-h-[100dvh] bg-gray-50">{children}</body>
+        <body className="bg-gray-50">{children}</body>
       </SessionProvider>
     </html>
   );

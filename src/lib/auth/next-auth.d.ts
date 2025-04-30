@@ -8,6 +8,7 @@ export enum UserRole {
 export type ExtendedUser = DefaultSession['user'] & {
   role: UserRole;
   isOAuth: boolean;
+  isUserValid: boolean;
 };
 
 declare module 'next-auth' {

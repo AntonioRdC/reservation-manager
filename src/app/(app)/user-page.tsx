@@ -98,7 +98,7 @@ export function UserPage({
   return (
     <div>
       <header className="border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
             <Layers3Icon className="h-6 w-6 text-rose-400" />
             <span className="ml-2 text-xl font-semibold text-gray-900">
@@ -123,10 +123,12 @@ export function UserPage({
                 <Button size="icon" className="rounded-full">
                   <Avatar>
                     <AvatarImage
-                      src={user?.image! || 'https://github.com/shadcn.png'}
-                      alt={user?.name || '@shadcn'}
+                      src={user?.image || undefined}
+                      alt={user?.name || 'Foto de perfil'}
                     />
-                    <AvatarFallback></AvatarFallback>
+                    <AvatarFallback className="text-xl font-semibold text-gray-900">
+                      {user?.name?.[0] || 'U'}
+                    </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -151,7 +153,7 @@ export function UserPage({
           </div>
         </div>
       </header>
-      <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+      <div className="flex flex-col min-h-[calc(100dvh-68px)] mx-auto w-full">
         <div className="flex flex-1 overflow-hidden h-full">
           {/* Sidebar */}
           <aside

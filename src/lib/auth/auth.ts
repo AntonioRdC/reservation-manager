@@ -63,6 +63,7 @@ export const {
         session.user.name = token.name;
         session.user.email = token.email as string;
         session.user.isOAuth = token.isOAuth as boolean;
+        session.user.isUserValid = token.isUserValid as boolean;
       }
 
       return session;
@@ -80,6 +81,7 @@ export const {
       token.name = existingUser.name;
       token.email = existingUser.email;
       token.role = existingUser.role;
+      token.isUserValid = existingUser.telefone && existingUser.address;
 
       return token;
     },

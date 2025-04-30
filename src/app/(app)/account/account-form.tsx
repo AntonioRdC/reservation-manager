@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { updateAccountAction } from '@/app/(app)/account/actions';
-import { useTransition, useState } from 'react';
+import { useTransition, useState, useRef } from 'react';
 import { Loader2 } from 'lucide-react';
 import { UpdateAccountFormSchema } from '@/app/(app)/account/schema';
 import { FormError } from '@/components/form-error';
@@ -43,6 +43,8 @@ import {
 } from '@/components/ui/popover';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ImageUploader } from '../(reservation)/reservation/components/image-uploader';
 
 type FormField = {
   name: keyof z.infer<typeof UpdateAccountFormSchema>;
@@ -146,6 +148,7 @@ export function AccountForm({
 }) {
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [isPending, startTransition] = useTransition();
 
@@ -160,6 +163,7 @@ export function AccountForm({
       state: user?.state || '',
       zipCode: user?.zipCode || '',
       country: user?.country || 'Brasil',
+      image: user?.image || null,
     },
   });
 
@@ -189,6 +193,36 @@ export function AccountForm({
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(handleSubmit)}>
+        {/* Imagem */}
+        <div className="flex space-y-4 gap-6">
+          <Avatar className="h-24 w-24">
+            <AvatarImage
+              src={user?.image || undefined}
+              alt={user?.name || 'Foto de perfil'}
+            />
+            <AvatarFallback className="text-xl font-semibold text-gray-900">
+              {user?.name?.[0] || 'U'}
+            </AvatarFallback>
+          </Avatar>
+
+          <FormField
+            key={'image'}
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>Imagem</FormLabel>
+                <FormControl>
+                  <ImageUploader
+                    onImageChange={(image) => field.onChange(image)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         {/* Campos básicos */}
         <div className="space-y-4">
           {basicFields.map((field) => (
@@ -208,6 +242,11 @@ export function AccountForm({
                       }
                       placeholder={field.placeholder}
                       type={field.type}
+                      value={
+                        typeof formField.value === 'string'
+                          ? formField.value
+                          : ''
+                      }
                     />
                   </FormControl>
                   {sessionUser?.isOAuth && field.name === 'email' && (
@@ -240,7 +279,11 @@ export function AccountForm({
                       placeholder={field.placeholder}
                       type="tel"
                       disabled={isPending}
-                      value={formField.value || ''}
+                      value={
+                        typeof formField.value === 'string'
+                          ? formField.value
+                          : ''
+                      }
                       onChange={(e) => {
                         const input = e.target.value.replace(/\D/g, '');
 

@@ -19,6 +19,16 @@ export const createBookingAction = async (
   const user = await currentUser();
   console.log('Current user:', user);
 
+  if (!user?.id) {
+    console.error('No authenticated user found');
+    return { error: 'Usuário não autenticado!' };
+  }
+
+  if (!user.isUserValid) {
+    console.error('User is not valid');
+    return { error: 'Usuário não válido!' };
+  }
+
   if (!validatedFields.success) {
     console.error('Validation failed:', validatedFields.error);
     return { error: 'Campos inválidos!' };
@@ -27,11 +37,6 @@ export const createBookingAction = async (
   const { space, category, date, startTime, endTime, resources } =
     validatedFields.data;
   console.log('Validated data:', { space, category, date, startTime, endTime });
-
-  if (!user?.id) {
-    console.error('No authenticated user found');
-    return { error: 'Usuário não autenticado!' };
-  }
 
   if (!category) {
     console.error('Category is required but not provided');

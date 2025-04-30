@@ -39,6 +39,7 @@ import {
   FormItem,
   FormMessage,
 } from '@/components/ui/form';
+import { useCurrentUser } from '@/lib/auth/hooks/use-current-user';
 
 interface BookingFormProps {
   spaces: Space[];
@@ -51,6 +52,7 @@ export function ReservationForm({
   resources,
   reservations,
 }: BookingFormProps) {
+  const user = useCurrentUser();
   const router = useRouter();
   const [error, setError] = useState<string | undefined>('');
   const [success, setSuccess] = useState<string | undefined>('');
@@ -78,6 +80,11 @@ export function ReservationForm({
 
     startTransition(async () => {
       try {
+        if (!user?.isUserValid) {
+          setError('Para fazer uma reserva, por favor, preencha seu perfil');
+          return;
+        }
+
         const data = await createBookingAction(values);
 
         if (data.success) {

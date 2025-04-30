@@ -28,6 +28,22 @@ export const UpdateAccountFormSchema = z.object({
     .or(z.literal(''))
     .optional(),
   country: z.string().optional().default('Brasil'),
+  image: z
+    .union([
+      z
+        .instanceof(File)
+        .refine(
+          (file) => ['image/jpeg', 'image/png'].includes(file.type),
+          'O formato da imagem deve ser JPEG, PNG.',
+        )
+        .refine(
+          (file) => file.size <= 5 * 1024 * 1024,
+          'A imagem deve ter no máximo 5MB.',
+        ),
+      z.string().url('A imagem deve ser uma URL válida.'),
+    ])
+    .optional()
+    .nullable(),
 });
 
 export const UpdatePasswordFormSchema = z
