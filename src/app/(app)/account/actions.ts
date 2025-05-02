@@ -61,7 +61,7 @@ export const updateAccountAction = async (
     email = undefined;
   }
 
-  let imageUrl = null;
+  let imageUrl = undefined;
 
   if (image instanceof File) {
     const presignedUrl = await putS3generatePresignedUrl(
@@ -110,6 +110,7 @@ export const updateAccountAction = async (
       user: {
         name,
         email,
+        image: imageUrl,
       },
     }),
   ]);
@@ -142,6 +143,7 @@ export const updateAccountAction = async (
     data: {
       name,
       email,
+      image: imageUrl,
       telefone,
       address,
       city,
