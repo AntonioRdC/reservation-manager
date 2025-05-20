@@ -27,6 +27,8 @@ import {
 import { Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { deleteSpaceAction } from './action';
+import { FormError } from '@/components/form-error';
+import { FormSuccess } from '@/components/form-success';
 
 export default function DataTableSpacePage() {
   const [data, setData] = useState<any[]>([]);
@@ -72,7 +74,7 @@ export default function DataTableSpacePage() {
 
         if (!result) {
           return setError(
-            'Ocorreu um erro no servidor, por favor, tente mais tarde',
+            'Esse espaço não pode ser excluído, pois possui reservas ativas',
           );
         }
 
@@ -92,6 +94,8 @@ export default function DataTableSpacePage() {
         Espaços
       </h1>
       <div className="flex max-h-screen w-full m-auto gap-4">
+        <FormError message={error} />
+        <FormSuccess message={success} />
         <div className="flex-auto">
           <div className="border dark:bg-slate-900 flex items-center justify-center">
             {isPending ? (

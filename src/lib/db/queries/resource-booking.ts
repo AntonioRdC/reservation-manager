@@ -42,3 +42,18 @@ export const getResourceBookingsByResourceId = async (resourceId: string) => {
     return null;
   }
 };
+
+export const findResourceBookingByBookingId = async (bookingId: string) => {
+  try {
+    const booking = await db
+      .select()
+      .from(resourceBookings)
+      .where(eq(resourceBookings.bookingId, bookingId))
+      .limit(1)
+      .then((results) => results[0] || null);
+
+    return booking;
+  } catch {
+    return null;
+  }
+};

@@ -76,3 +76,19 @@ export const createBooking = async (payload: NewBooking) => {
     return null;
   }
 };
+
+export const getBookingsBySpaceId = async (
+  spaceId: string,
+): Promise<Booking[] | null> => {
+  try {
+    const bookingsList = await db
+      .select()
+      .from(bookings)
+      .where(eq(bookings.spaceId, spaceId))
+      .orderBy(asc(bookings.createdAt));
+
+    return bookingsList;
+  } catch (error) {
+    return null;
+  }
+};
