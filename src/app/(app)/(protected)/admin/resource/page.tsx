@@ -22,10 +22,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, MinusCircle, PlusCircle, Trash2 } from 'lucide-react';
 import { getAllResources } from '@/lib/db/queries/resources';
 import Link from 'next/link';
-import { deleteResourceAction } from './action';
+import {
+  addOneResourceAction,
+  deleteResourceAction,
+  removeOneResourceAction,
+} from './action';
+import { FormError } from '@/components/form-error';
+import { FormSuccess } from '@/components/form-success';
 
 export default function DataTableResourcePage() {
   const [error, setError] = useState<string | undefined>('');
@@ -61,7 +67,7 @@ export default function DataTableResourcePage() {
     },
   });
 
-  const handleSubmit = (id: string) => {
+  const handleRemoveResource = (id: string) => {
     setError('');
     setSuccess('');
 
@@ -85,6 +91,52 @@ export default function DataTableResourcePage() {
     });
   };
 
+  const handleAddOneResource = (id: string) => {
+    setError('');
+    setSuccess('');
+
+    startTransition(async () => {
+      try {
+        const result = await addOneResourceAction(id);
+
+        if (!result) {
+          return setError(
+            'Não foi possível adicionar uma unidade a este recurso',
+          );
+        }
+
+        const updatedData = await getAllResources();
+        setData(updatedData || []);
+
+        setSuccess('Unidade adicionada com sucesso');
+      } catch (error) {
+        setError('Ocorreu um erro no servidor, por favor, tente mais tarde');
+      }
+    });
+  };
+
+  const handleRemoveOneResource = (id: string) => {
+    setError('');
+    setSuccess('');
+
+    startTransition(async () => {
+      try {
+        const result = await removeOneResourceAction(id);
+
+        if (!result) {
+          return setError('Não foi possível remover uma unidade deste recurso');
+        }
+
+        const updatedData = await getAllResources();
+        setData(updatedData || []);
+
+        setSuccess('Unidade removida com sucesso');
+      } catch (error) {
+        setError('Ocorreu um erro no servidor, por favor, tente mais tarde');
+      }
+    });
+  };
+
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium bold text-rose-500 mb-6">
@@ -93,6 +145,8 @@ export default function DataTableResourcePage() {
       <div className="flex max-h-screen w-full m-auto gap-4">
         <div className="flex-auto">
           <div className="border dark:bg-slate-900 flex items-center justify-center">
+            <FormError message={error} />
+            <FormSuccess message={success} />
             {isPending ? (
               <span className="flex">
                 <Loader2 className="animate-spin" />
@@ -134,10 +188,34 @@ export default function DataTableResourcePage() {
                             variant="ghost"
                             size="sm"
                             className="text-red-500"
-                            onClick={() => handleSubmit(row.original.id)}
+                            onClick={() =>
+                              handleRemoveResource(row.original.id)
+                            }
                             disabled={isPending}
                           >
                             <Trash2 />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-500"
+                            onClick={() =>
+                              handleAddOneResource(row.original.id)
+                            }
+                            disabled={isPending}
+                          >
+                            <PlusCircle />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-orange-500"
+                            onClick={() =>
+                              handleRemoveOneResource(row.original.id)
+                            }
+                            disabled={isPending}
+                          >
+                            <MinusCircle />
                           </Button>
                         </TableCell>
                       </TableRow>

@@ -2,7 +2,7 @@
 
 import { db } from '@/lib/db/drizzle';
 import { resources } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 export const getAllResources = async () => {
   try {
@@ -35,6 +35,34 @@ export const deleteRosource = async (id: string) => {
       .returning();
 
     return deletedResource;
+  } catch {
+    return null;
+  }
+};
+
+export const incrementResourceCount = async (id: string) => {
+  try {
+    const [resource] = await db
+      .update(resources)
+      .set({ quantity: sql`${resources.quantity} + 1` })
+      .where(eq(resources.id, id))
+      .returning();
+
+    return resource;
+  } catch {
+    return null;
+  }
+};
+
+export const decrementResourceCount = async (id: string) => {
+  try {
+    const [resource] = await db
+      .update(resources)
+      .set({ quantity: sql`${resources.quantity} - 1` })
+      .where(eq(resources.id, id))
+      .returning();
+
+    return resource;
   } catch {
     return null;
   }
