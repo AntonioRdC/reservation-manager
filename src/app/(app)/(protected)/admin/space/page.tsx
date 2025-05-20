@@ -17,14 +17,6 @@ import { getAllSpaces } from '@/lib/db/queries/spaces';
 import { columns } from '@/app/(app)/(protected)/admin/space/column';
 import { Button } from '@/components/ui/button';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
   Table,
   TableBody,
   TableCell,
@@ -34,9 +26,12 @@ import {
 } from '@/components/ui/table';
 import { Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
+import { deleteSpaceAction } from './action';
 
 export default function DataTableSpacePage() {
   const [data, setData] = useState<any[]>([]);
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isPending, startTransition] = useTransition();
@@ -66,6 +61,30 @@ export default function DataTableSpacePage() {
       sorting,
     },
   });
+
+  const handleSubmit = (id: string) => {
+    setError('');
+    setSuccess('');
+
+    startTransition(async () => {
+      try {
+        const result = await deleteSpaceAction(id);
+
+        if (!result) {
+          return setError(
+            'Ocorreu um erro no servidor, por favor, tente mais tarde',
+          );
+        }
+
+        const updatedData = await getAllSpaces();
+        setData(updatedData || []);
+
+        setSuccess('Deletado com sucesso');
+      } catch (error) {
+        setError('Ocorreu um erro no servidor, por favor, tente mais tarde');
+      }
+    });
+  };
 
   return (
     <section className="flex-1 p-4 lg:p-8">
@@ -116,9 +135,8 @@ export default function DataTableSpacePage() {
                             variant="ghost"
                             size="sm"
                             className="text-red-500"
-                            onClick={() => {
-                              /* onClick function here */
-                            }}
+                            onClick={() => handleSubmit(row.original.id)}
+                            disabled={isPending}
                           >
                             <Trash2 />
                           </Button>

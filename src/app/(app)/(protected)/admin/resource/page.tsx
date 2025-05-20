@@ -25,8 +25,11 @@ import {
 import { Loader2, Trash2 } from 'lucide-react';
 import { getAllResources } from '@/lib/db/queries/resources';
 import Link from 'next/link';
+import { deleteResourceAction } from './action';
 
 export default function DataTableResourcePage() {
+  const [error, setError] = useState<string | undefined>('');
+  const [success, setSuccess] = useState<string | undefined>('');
   const [data, setData] = useState<any[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -57,6 +60,30 @@ export default function DataTableResourcePage() {
       sorting,
     },
   });
+
+  const handleSubmit = (id: string) => {
+    setError('');
+    setSuccess('');
+
+    startTransition(async () => {
+      try {
+        const result = await deleteResourceAction(id);
+
+        if (!result) {
+          return setError(
+            'Esse recurso não pode ser excluído, pois possui reservas ativas',
+          );
+        }
+
+        const updatedData = await getAllResources();
+        setData(updatedData || []);
+
+        setSuccess('Deletado com sucesso');
+      } catch (error) {
+        setError('Ocorreu um erro no servidor, por favor, tente mais tarde');
+      }
+    });
+  };
 
   return (
     <section className="flex-1 p-4 lg:p-8">
@@ -107,9 +134,8 @@ export default function DataTableResourcePage() {
                             variant="ghost"
                             size="sm"
                             className="text-red-500"
-                            onClick={() => {
-                              /* onClick function here */
-                            }}
+                            onClick={() => handleSubmit(row.original.id)}
+                            disabled={isPending}
                           >
                             <Trash2 />
                           </Button>

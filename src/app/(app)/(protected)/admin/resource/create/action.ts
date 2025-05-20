@@ -1,3 +1,5 @@
+'use server';
+
 import { z } from 'zod';
 import { ResourcesFormSchema } from './schema';
 import { createRosource } from '@/lib/db/queries/resources';

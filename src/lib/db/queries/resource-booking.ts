@@ -29,3 +29,16 @@ export const getResourceBookingByUserId = async (bookingId: string) => {
     return null;
   }
 };
+
+export const getResourceBookingsByResourceId = async (resourceId: string) => {
+  try {
+    const bookings = await db
+      .select()
+      .from(resourceBookings)
+      .where(eq(resourceBookings.resourceId, resourceId));
+
+    return bookings;
+  } catch {
+    return null;
+  }
+};

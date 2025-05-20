@@ -67,3 +67,17 @@ export const createSpace = async ({
     return null;
   }
 };
+
+export const deleteSpace = async (id: string) => {
+  try {
+    const [deletedSpace] = await db
+      .delete(spaces)
+      .where(eq(spaces.id, id))
+      .returning();
+
+    return deletedSpace;
+  } catch (error) {
+    console.error('Error deleting space:', error);
+    return null;
+  }
+};

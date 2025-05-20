@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db/drizzle';
 import { resources } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const getAllResources = async () => {
   try {
@@ -21,6 +22,19 @@ export const createRosource = async (name: string, quantity: number) => {
       .returning();
 
     return resource;
+  } catch {
+    return null;
+  }
+};
+
+export const deleteRosource = async (id: string) => {
+  try {
+    const [deletedResource] = await db
+      .delete(resources)
+      .where(eq(resources.id, id))
+      .returning();
+
+    return deletedResource;
   } catch {
     return null;
   }
