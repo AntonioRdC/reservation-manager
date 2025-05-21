@@ -81,6 +81,12 @@ export function UserPage({
                 icon: Calendar,
                 label: 'Gerenciar Reservas',
               },
+              {
+                href: '/admin/calendar',
+                icon: Calendar,
+                label: 'Calendário',
+                subLabel: 'Ver Calendário',
+              },
             ],
           },
         ]

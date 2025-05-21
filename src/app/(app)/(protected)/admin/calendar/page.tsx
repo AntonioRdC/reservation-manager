@@ -11,7 +11,7 @@ export default async function CalendarAdminPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveIframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FPorto_Velho&showPrint=0&src=YW50b25pb3JpYmVpcm9hbWdAZ21haWwuY29t&color=%23039BE5" />
+          <ResponsiveIframe src={process.env.IFRAME_CALENDAR || ''} />
         </CardContent>
       </Card>
     </section>

@@ -142,9 +142,9 @@ export default function DataTableResourcePage() {
       <h1 className="text-lg lg:text-2xl font-medium bold text-rose-500 mb-6">
         Recursos de Espaços
       </h1>
+      <FormError message={error} />
+      <FormSuccess message={success} />
       <div className="flex max-h-screen w-full m-auto gap-4">
-        <FormError message={error} />
-        <FormSuccess message={success} />
         <div className="flex-auto">
           <div className="border dark:bg-slate-900 flex items-center justify-center">
             {isPending ? (
