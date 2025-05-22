@@ -25,6 +25,9 @@ export default function RootLayout({
       lang="pt-br"
       className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
     >
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </head>
       <SessionProvider>
         <body className="bg-gray-50">{children}</body>
       </SessionProvider>
