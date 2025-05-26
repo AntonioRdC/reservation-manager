@@ -122,7 +122,7 @@ export function DateTimePicker({
     if (!selectedDate) return;
 
     const isDisabled =
-      selectedDate <= new Date() ||
+      isBeforeToday(selectedDate) ||
       fullyBookedDates.some((bookedDate) =>
         isSameDay(selectedDate, bookedDate),
       );
@@ -175,6 +175,12 @@ export function DateTimePicker({
     return filtered;
   }, [selectedDate, reservationsForSelectedDate]);
 
+  const isBeforeToday = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
   return (
     <div className="flex flex-col gap-2 items-center md:flex-row">
       {/* Data */}
@@ -201,7 +207,7 @@ export function DateTimePicker({
               }
 
               const isDisabled =
-                date <= new Date() ||
+                isBeforeToday(date) ||
                 fullyBookedDates.some((bookedDate) =>
                   isSameDay(date, bookedDate),
                 );
@@ -211,7 +217,7 @@ export function DateTimePicker({
               }
             }}
             disabled={(date) =>
-              date <= new Date() ||
+              isBeforeToday(date) ||
               fullyBookedDates.some((bookedDate) => isSameDay(date, bookedDate))
             }
             initialFocus
